@@ -20,8 +20,8 @@
           with="600"
           label="操作">
           <template slot-scope="scope">
-            <el-button plain type="primary" @click="editManage">编辑</el-button>
-            <el-button plain type="danger">删除</el-button>
+            <el-button plain type="primary" @click="editManage" size="small">编辑</el-button>
+            <el-button plain type="danger" size="small">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
