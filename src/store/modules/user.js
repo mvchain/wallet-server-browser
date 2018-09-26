@@ -23,12 +23,11 @@ const user = {
           }
           state.avatar = payload.username
           window.localStorage.setItem('user', JSON.stringify({refreshToken: res.refreshToken, username: payload.username}))
-          window.localStorage.setItem('permission ', JSON.stringify(permission))
+          window.localStorage.setItem('permission', JSON.stringify(permission))
           setToken(res.token)
           commit('SET_TOKEN', res.token)
           resolve()
         }).catch(error => {
-          console.log()
           reject(error)
         })
       })

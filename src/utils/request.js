@@ -32,7 +32,7 @@ service.interceptors.response.use(
     if ((response.request.responseURL.endsWith('/dashbord'))) {
       return response.data.data
     }
-    if (res.status !== 200) {
+    if (res.code !== 200) {
       Message({
         message: res.data,
         type: 'error',
@@ -51,11 +51,11 @@ service.interceptors.response.use(
       duration: 5 * 1000
     })
     //  50014:Token 过期了;50015,长的
-    if (error.response.data.status === 50014) {
+    if (error.response.data.code === 50014) {
       store.dispatch('getReferToken').then(() => {
         window.location.reload()
       }).catch()
-    } else if (error.response.data.status === 50015) {
+    } else if (error.response.data.code === 50015) {
       store.dispatch('FedLogOut').then(() => {
         location.reload()// 为了重新实例化vue-router对象 避免bug
         Message({

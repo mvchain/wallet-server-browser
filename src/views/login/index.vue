@@ -30,7 +30,6 @@
 
 <script>
   import md5 from 'blueimp-md5'
-  import axi from 'axios'
 
   export default {
     name: 'login',
@@ -83,7 +82,6 @@
               this.loading = false
               this.$router.push({ path: '/' })
             }).catch(() => {
-              console.log(123)
               this.loading = false
             })
           } else {

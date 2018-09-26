@@ -33,12 +33,33 @@ export const constantRouterMap = [
     }]
   },
   {
+    path: '/company',
+    component: Layout,
+    redirect: '/company/companyManage',
+    name: 'company',
+    meta: { title: '商家', icon: 'wallet', adminType: '0/1' },
+    children: [
+      {
+        path: 'companyManage',
+        name: 'companyManage',
+        component: _import('company/companyManage'),
+        meta: { title: '商家管理', icon: 'wallet' }
+      },
+      {
+        path: 'companyWithdraw',
+        name: 'companyWithdraw',
+        component: _import('company/companyWithdraw'),
+        meta: { title: '商家提现', icon: 'wallet' }
+      }
+    ]
+  },
+  {
     path: '/AdministratorSettings',
     component: Layout,
     redirect: '/AdministratorSettings/Setting',
 
     name: 'AdministratorSettings',
-    meta: { title: '设置', icon: 'teacher' },
+    meta: { title: '设置', icon: 'teacher', adminType: '0/2' },
     children: [
       {
         path: 'Setting',
@@ -53,7 +74,7 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/rechargeWithdraw/recharge',
     name: 'rechargeWithdraw',
-    meta: { title: '充提管理', icon: 'dragstore' },
+    meta: { title: '充提管理', icon: 'dragstore', adminType: '0/1/2/3' },
     children: [
       {
         path: 'recharge',
@@ -74,7 +95,7 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/dataStatistics/rechargeData',
     name: 'dataStatistics',
-    meta: { title: '数据统计', icon: 'list' },
+    meta: { title: '数据统计', icon: 'list', adminType: '0/1/2/3' },
     children: [
       {
         path: 'rechargeData',
@@ -95,7 +116,7 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/apply/applyWithdraw',
     name: 'apply',
-    meta: { title: '申请', icon: 'form' },
+    meta: { title: '申请', icon: 'form', adminType: '2/3' },
     children: [
       {
         path: 'applyWithdraw',
@@ -105,6 +126,22 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/address',
+    component: Layout,
+    redirect: '/address/setAddr',
+    name: 'address',
+    meta: { title: '地址', icon: 'teacher', adminType: '0/1' },
+    children: [
+      {
+        path: 'setAddr',
+        name: 'setAddr',
+        component: _import('address/index'),
+        meta: { title: '地址管理', icon: 'teacher' }
+      }
+    ]
+  },
+
   { path: '*', redirect: '/404', hidden: true }
 ]
 
