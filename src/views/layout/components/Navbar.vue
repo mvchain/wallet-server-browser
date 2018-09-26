@@ -12,16 +12,27 @@
         <i class="el-icon-caret-bottom"></i>
       </div>
       <el-dropdown-menu class="user-dropdown" slot="dropdown">
-        <router-link class="inlineBlock" to="/">
-          <el-dropdown-item>
-            Home
-          </el-dropdown-item>
-        </router-link>
+        <el-dropdown-item>
+          <span @click="dialogFormVisible = true">手续费设置</span>
+        </el-dropdown-item>
         <el-dropdown-item divided>
-          <span @click="logout" style="display:block;">LogOut</span>
+          <span @click="logout" style="display:block;">退出</span>
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
+    <el-dialog  width="600px"  title="转账手续费设置" :visible.sync="dialogFormVisible">
+      <el-slider
+        v-model="newFee.fee"
+        :min="0.0000252"
+        :max="0.002016"
+        :step="0.000001"
+      >
+      </el-slider>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setFee">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-menu>
 </template>
 
@@ -37,9 +48,28 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'sidebar',
-      'avatar'
+      'sidebar'
     ])
+  },
+  data() {
+    return {
+      avatar: '',
+      newFee: {
+        fee: 0.00025
+      },
+      dialogFormVisible: false
+    }
+  },
+  watch: {
+    'newFee.fee': function(v) {
+      this.newFee.gasPrice = parseInt(v / this.feeData.gasLimit * 1000000000000000000)
+    }
+  },
+  mounted() {
+    const un = window.localStorage.getItem('user')
+    if (un) {
+      this.avatar = JSON.parse(un).username
+    }
   },
   methods: {
     toggleSideBar() {
@@ -58,6 +88,9 @@ export default {
     },
     targetEth() {
       window.open('https://www.baidu.com')
+    },
+    setFee() {
+      this.dialogFormVisible = false
     }
   }
 }

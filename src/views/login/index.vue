@@ -19,18 +19,6 @@
                   placeholder="password"></el-input>
         <span class="show-pwd" @click="showPwd"><svg-icon icon-class="eye"/></span>
       </el-form-item>
-      <el-form-item prop="valiCode">
-        <el-row class="verification-con">
-          <el-col :span="18" class="verification-e">
-            <el-input v-model="loginForm.imageCode"></el-input>
-          </el-col>
-          <el-col :span="6" class="verification-s">
-            <span @click="changeVerification">
-              <img :src="verificationImg" alt="">
-            </span>
-          </el-col>
-        </el-row>
-      </el-form-item>
       <el-form-item>
         <el-button type="primary" style="width:100%;" v-loading="loading" @click="handleLogin">
           登 录
@@ -47,7 +35,6 @@
   export default {
     name: 'login',
     mounted() {
-      this.createCode()
     },
     data() {
       const validateUsername = (rule, value, callback) => {
@@ -66,23 +53,18 @@
       }
       return {
         loginForm: {
-          username: '',
-          password: '',
-          imageCode: ''
+          username: 'admin',
+          password: 'admin'
         },
         loginRules: {
           username: [{ required: true, trigger: 'blur', validator: validateUsername }],
           password: [{ required: true, trigger: 'blur', validator: validatePass }]
         },
         loading: false,
-        pwdType: 'password',
-        verificationImg: ''
+        pwdType: 'password'
       }
     },
     methods: {
-      createCode() {
-        this.verificationImg = window.urlData.url + '/admin/validate/image?t=' + Date.parse(new Date())
-      },
       showPwd() {
         if (this.pwdType === 'password') {
           this.pwdType = ''
@@ -90,29 +72,25 @@
           this.pwdType = 'password'
         }
       },
-      changeVerification() {
-        this.createCode()
-      },
       handleLogin() {
-        this.$router.push({ path: '/' })
-        // this.$refs.loginForm.validate(valid => {
-        //   if (valid) {
-        //     this.loading = true
-        //     let copyForm = JSON.stringify(this.loginForm)
-        //     copyForm = JSON.parse(copyForm)
-        //     copyForm.password = md5(md5(copyForm.password) + 'MVC')
-        //
-        //     this.$store.dispatch('Login', copyForm).then(() => {
-        //       this.loading = false
-        //       this.$router.push({ path: '/' })
-        //     }).catch(() => {
-        //       this.loading = false
-        //     })
-        //   } else {
-        //     this.$message.error('请正确填写表单')
-        //     return false
-        //   }
-        // })
+        this.$refs.loginForm.validate(valid => {
+          if (valid) {
+            this.loading = true
+            let copyForm = JSON.stringify(this.loginForm)
+            copyForm = JSON.parse(copyForm)
+            copyForm.password = md5(md5(copyForm.password) + this.loginForm.username)
+            this.$store.dispatch('Login', copyForm).then(() => {
+              this.loading = false
+              this.$router.push({ path: '/' })
+            }).catch(() => {
+              console.log(123)
+              this.loading = false
+            })
+          } else {
+            this.$message.error('请正确填写表单')
+            return false
+          }
+        })
       }
     }
   }

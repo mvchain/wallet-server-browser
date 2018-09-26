@@ -14,14 +14,21 @@ const user = {
 
   actions: {
     // 登录
-    Login({ commit }, payload) {
+    Login({ commit, state }, payload) {
       return new Promise((resolve, reject) => {
         login(payload).then(res => {
-          window.sessionStorage.setItem('user', JSON.stringify({refreshToken: res.data.refreshToken, username: payload.username}))
-          setToken(res.data.token)
-          commit('SET_TOKEN', res.data.token)
+          const permission = {
+            adminType: res.adminType,
+            permissionList: res.permissionList
+          }
+          state.avatar = payload.username
+          window.localStorage.setItem('user', JSON.stringify({refreshToken: res.refreshToken, username: payload.username}))
+          window.localStorage.setItem('permission ', JSON.stringify(permission))
+          setToken(res.token)
+          commit('SET_TOKEN', res.token)
           resolve()
         }).catch(error => {
+          console.log()
           reject(error)
         })
       })
@@ -32,7 +39,7 @@ const user = {
       return new Promise((resolve, reject) => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
-        window.sessionStorage.clear()
+        window.localStorage.clear()
         removeToken()
         resolve()
       })

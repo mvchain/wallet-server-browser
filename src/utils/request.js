@@ -11,6 +11,7 @@ const service = axios.create({
 })
 // request拦截器
 service.interceptors.request.use(config => {
+
   if (getToken()) {
     config.headers['Authorization'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
   }
@@ -28,10 +29,8 @@ service.interceptors.response.use(
      */
 
     const res = response.data
-    if ((response.request.responseURL.indexOf('/transaction/collect/json') !== -1) ||
-      (response.request.responseURL.indexOf('/transaction/transaction/json') !== -1)||
-      (response.request.responseURL.indexOf('/transaction/all/json') !== -1)) {
-      return response
+    if ((response.request.responseURL.endsWith('/dashbord'))) {
+      return response.data.data
     }
     if (res.status !== 200) {
       Message({

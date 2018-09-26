@@ -2,7 +2,7 @@
   <div class="recharge">
     <el-row :gutter="20">
       <el-col :span="3">
-        <el-button @click="clickAgree">一键同意</el-button>
+        <el-button @click="clickAgree">同意已勾选</el-button>
       </el-col>
 
       <el-col :span="3">
@@ -112,26 +112,26 @@
           shortcuts: [{
             text: '最近一周',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
             }
           }, {
             text: '最近一个月',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
             }
           }, {
             text: '最近三个月',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit('pick', [start, end]);
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+              picker.$emit('pick', [start, end])
             }
           }]
         },
