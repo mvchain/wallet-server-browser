@@ -1,13 +1,17 @@
 import { adminList, createAdmin, deleteAdmin, modifyAdmin } from '@/api/admin'
-
+import { companyList, createCompany } from '@/api/Home'
 const center = {
   state: {
-    adminList: {}
+    adminList: {},
+    companyList: {}
   },
 
   mutations: {
-    SET_ADMIN_LIST: (state, adminList) => {
-      state.adminList = adminList
+    SET_ADMIN_LIST: (state, payload) => {
+      state.adminList = payload
+    },
+    SET_COMPANY_LIST: (state, payload) => {
+      state.companyList = payload
     }
   },
 
@@ -48,7 +52,26 @@ const center = {
           reject(error)
         })
       })
-    }
+    },
+    getCompanyList({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        companyList(payload).then(res => {
+          commit('SET_COMPANY_LIST', res.data)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    postCreateCompany({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        createCompany(payload).then(res => {
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
   }
 }
 

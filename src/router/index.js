@@ -33,6 +33,22 @@ export const constantRouterMap = [
     }]
   },
   {
+    path: '/AdministratorSettings',
+    component: Layout,
+    redirect: '/AdministratorSettings/Setting',
+
+    name: 'AdministratorSettings',
+    meta: { title: '设置', icon: 'teacher', adminType: '0/2' },
+    children: [
+      {
+        path: 'Setting',
+        name: 'Setting',
+        component: _import('AdministratorSettings/index'),
+        meta: { title: '管理员设置', icon: 'teacher' }
+      }
+    ]
+  },
+  {
     path: '/company',
     component: Layout,
     redirect: '/company/companyManage',
@@ -53,22 +69,7 @@ export const constantRouterMap = [
       }
     ]
   },
-  {
-    path: '/AdministratorSettings',
-    component: Layout,
-    redirect: '/AdministratorSettings/Setting',
 
-    name: 'AdministratorSettings',
-    meta: { title: '设置', icon: 'teacher', adminType: '0/2' },
-    children: [
-      {
-        path: 'Setting',
-        name: 'Setting',
-        component: _import('AdministratorSettings/index'),
-        meta: { title: '管理员设置', icon: 'teacher' }
-      }
-    ]
-  },
   {
     path: '/rechargeWithdraw',
     component: Layout,

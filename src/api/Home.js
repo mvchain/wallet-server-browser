@@ -1,8 +1,15 @@
 import request from '@/utils/request'
 
-export function projectList(data) {
+export function companyList(data) {
   return request({
-    url: '/project?' + data,
+    url: '/dashbord/shop?' + data,
     method: 'get'
+  })
+}
+export function createCompany(data) {
+  return request({
+    url: '/dashbord/shop?',
+    method: 'post',
+    data
   })
 }

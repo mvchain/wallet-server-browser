@@ -81,6 +81,7 @@
         dialogFormVisible: false,
         subFlag: false,
         formLabelWidth: '100px',
+        pageNum: 1,
         manageForm: {
           accountName: '',
           adminPassword: '',
@@ -122,7 +123,8 @@
         this.$store.dispatch('getAdminList', payload).then().catch()
       },
       handleCurrentChange(t) {
-        console.log(t)
+        this.pageNum = t
+        this.getTableData(`?pageNum=${t}&pageSize=20&orderBy=created_at`)
       },
       ajaxFormHandler(t, f, n) {
         if (t) {
@@ -187,13 +189,12 @@
           inputType: 'password',
           cancelButtonText: '取消'
         }).then(({ value }) => {
-          console.log(id)
+          // this.$store.dispatch('deleteAdminList', id).then(() => {
+          //   this.$message.success('删除成功')
+          // }).catch()
           this.$message.success('删除成功')
         }).catch(() => {
         })
-        // this.$store.dispatch('deleteAdminList', id).then(() => {
-        //   this.$message.success('删除成功')
-        // }).catch()
       },
       editManage(obj) {
         this.dialogFormVisible = true
