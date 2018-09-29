@@ -53,7 +53,7 @@ const user = {
       })
     },
     getReferToken: () => {
-      const rToken = JSON.parse(window.sessionStorage.getItem('user')).refreshToken
+      const rToken = JSON.parse(window.localStorage.getItem('user')).refreshToken
       setToken(rToken)
       return new Promise((resolve, reject) => {
         refreshToken().then(res => {

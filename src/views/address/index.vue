@@ -5,16 +5,16 @@
         <el-button>地址导入</el-button>
       </el-col>
       <el-col :span="6" style="line-height: 40px">
-        <span>待分配地址数量：1200</span>
-        <span style="padding-left:50px;">已分配地址数量：1200</span>
+        <span>待分配地址数量：{{addressData.surplus}}</span>
+        <span style="padding-left:50px;">已分配地址数量：{{addressData.use}}</span>
       </el-col>
       <el-col :span="3">
-        <el-select v-model="companyName" placeholder="请选择">
+        <el-select @change="changeFun" v-model="companyName" placeholder="请选择">
           <el-option
-            v-for="item in companyList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
+            v-for="item in companyList.list"
+            :key="item.shopId"
+            :label="item.shopName"
+            :value="item.shopId">
           </el-option>
         </el-select>
       </el-col>
@@ -31,17 +31,17 @@
       </el-col>
       <el-col :span="7">
         <el-input placeholder="输入来源地址、交易哈希" v-model="searchText" class="input-with-select">
-          <el-button slot="append" icon="el-icon-search">搜索</el-button>
+          <el-button slot="append" icon="el-icon-search" @click="searchHandler">搜索</el-button>
         </el-input>
       </el-col>
     </el-row>
     <div class="address-table">
       <el-table
-        :data="tableData"
+        :data="addressList.list"
         border
         style="width: 100%">
         <el-table-column
-          prop="company"
+          prop="shopName"
           label="商家">
         </el-table-column>
         <el-table-column
@@ -50,7 +50,7 @@
           label="地址">
         </el-table-column>
         <el-table-column
-          prop="status"
+          prop="isUsedStr"
           label="状态">
         </el-table-column>
       </el-table>
@@ -59,7 +59,7 @@
           @current-change="handleCurrentChange"
           :page-size="20"
           layout="prev, pager, next"
-          :total="50">
+          :total="addressList.total">
         </el-pagination>
       </div>
     </div>
@@ -67,68 +67,64 @@
 </template>
 
 <script>
+  import {mapGetters} from 'vuex'
   export default {
     name: 'setAddr',
+    props: {
+      permission: Number,
+      manage: Object
+    },
     data() {
       return {
         searchText: '',
-        companyName: '1',
-        companyStatus: '1',
-        companyList: [
-          {
-            name: '全部商家',
-            id: '1'
-          },
-          {
-            name: '淘宝商家',
-            id: '2'
-          },
-          {
-            name: '京东商家',
-            id: '3'
-          }
-        ],
+        companyName: '',
+        companyStatus: '',
+        pageNum: 1,
         statusList: [
           {
             name: '全部状态',
-            id: '1'
+            id: ''
           },
           {
             name: '已分配',
-            id: '2'
+            id: '1'
           },
           {
             name: '未分配',
-            id: '3'
-          }
-        ],
-        tableData: [
-          {
-            company: '淘宝商家',
-            address: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            status: '1'
-          },
-          {
-            company: '京东商家',
-            address: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            status: '2'
-          },
-          {
-            company: '淘宝商家',
-            address: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            status: '1'
-          },
-          {
-            company: '京东商家',
-            address: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            status: '2'
+            id: '0'
           }
         ]
       }
     },
+    mounted() {
+      // id=0&tokenType=1&address=2&createdAt=3&updatedAt=4&isUsed=5&balance=6&userId=7&shopId=8
+      this.getTableData('pageNum=1&pageSize=20&orderBy=created_at')
+      this.$store.dispatch('getCompanyList', 'pageNum=1&pageSize=1000&orderBy=status desc,created_at desc').then(() => {
+        this.companyList.list.unshift({ shopName: '全部商家', shopId: '' })
+      }).catch()
+      this.$store.dispatch('getAddressData').then().catch()
+    },
+    computed: {
+      ...mapGetters({
+        addressList: 'addressList',
+        companyList: 'companyList',
+        addressData: 'addressData'
+      })
+    },
     methods: {
+      searchHandler() {
+        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&tokenType=ETH&address=${this.searchText}&isUsed=${this.companyStatus}&balance=6&userId=7&shopId=${this.companyName}`)
+      },
+      changeFun(v) {
+        this.companyName = v
+        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&tokenType=ETH&address=${this.searchText}&isUsed=${this.companyStatus}&balance=6&userId=7&shopId=${v}`)
+      },
+      getTableData(payload) {
+        this.$store.dispatch('getAddressList', payload).then().catch()
+      },
       handleCurrentChange(t) {
-        console.log(t)
+        this.pageNum = t
+        this.getTableData(`pageNum=${t}&pageSize=20&tokenType=ETH&address=${this.searchText}&isUsed=${this.companyStatus}&balance=6&userId=7&shopId=${this.companyName}`)
       },
       exportTable() {
         console.log('导出表格')

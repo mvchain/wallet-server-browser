@@ -23,9 +23,9 @@
     <el-dialog  width="600px"  title="转账手续费设置" :visible.sync="dialogFormVisible">
       <el-slider
         v-model="newFee.fee"
-        :min="0.0000252"
-        :max="0.002016"
-        :step="0.000001"
+        :min="0.0000210"
+        :max="0.002100"
+        :step="0.0000021"
       >
       </el-slider>
       <div slot="footer" class="dialog-footer">
@@ -55,7 +55,7 @@ export default {
     return {
       avatar: '',
       newFee: {
-        fee: 0.00025
+        fee: 0.00021
       },
       dialogFormVisible: false
     }

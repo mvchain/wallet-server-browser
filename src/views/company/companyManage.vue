@@ -13,19 +13,19 @@
           label="商家名称">
         </el-table-column>
         <el-table-column
-          prop="rechargeNum30"
+          prop="recharge30"
           label="30日充值金额">
         </el-table-column>
         <el-table-column
-          prop="rechargeOrder"
+          prop="rechargeNum30"
           label="30日充值单数">
         </el-table-column>
         <el-table-column
-          prop="withdrawNum30"
+          prop="withdraw30"
           label="30日提币金额">
         </el-table-column>
         <el-table-column
-          prop="withdrawOrder"
+          prop="withdrawNum30"
           label="30日提币单数">
         </el-table-column>
         <el-table-column
@@ -35,12 +35,15 @@
         <el-table-column
           label="操作">
           <template slot-scope="scope">
-            <el-button plain type="primary" size="small" @click="editManage">编辑</el-button>
+            <el-button plain type="primary" size="small" @click="editManage(scope.row)">编辑</el-button>
+            <el-button plain type="primary" size="small" @click="withDrawManage(scope.row)">提现</el-button>
           </template>
         </el-table-column>
         <el-table-column
-          prop="status"
           label="状态">
+          <template slot-scope="scope">
+            {{scope.row.status === 1 ? '正常' : '停运'}}
+          </template>
         </el-table-column>
       </el-table>
       <div style="margin-top:30px; text-align:center;">
@@ -61,29 +64,49 @@
           <el-input v-model="companyForm.adminAccount"></el-input>
         </el-form-item>
         <el-form-item label="管理员密码：" :label-width="formLabelWidth" prop="adminPassword">
-          <el-input type="password" v-model="companyForm.adminPassword"></el-input>
+          <el-input type="password" v-model="companyForm.password"></el-input>
         </el-form-item>
         <el-form-item v-if="!dialogTitle" label="是否停运：" prop="delivery" :label-width="formLabelWidth">
-          <el-switch active-value="1" inactive-value="0" v-model="companyForm.status"></el-switch>
+          <el-switch :active-value="0" :inactive-value="1" v-model="companyForm.status"></el-switch>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="subForm('companyForm')">确 定</el-button>
+        <el-button :loading="subFlag" type="primary" @click="subForm('companyForm')">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog width="500px" title="商家提现" :visible.sync="dialogWithdraw" center>
+      <el-form :model="withdrawForm" ref="withdrawForm" :rule="withdrawRule">
+        <el-form-item label="提现地址：" :label-width="formLabelWidth" prop="address">
+          <el-input v-model="withdrawForm.address"></el-input>
+        </el-form-item>
+        <el-form-item label="提现金额：" :label-width="formLabelWidth"  prop="value">
+          <el-input v-model="withdrawForm.value"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogWithdraw = false">取 消</el-button>
+        <el-button :loading="subFlag" type="primary" @click="ajaxWithdrawHandler('withdrawForm')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-  import {mapGetters} from 'vuex'
+  import { mapGetters } from 'vuex'
   import md5 from 'blueimp-md5'
   export default {
     name: 'companyManage',
+    props: {
+      permission: Number,
+      manage: Object
+    },
     data() {
       return {
         dialogTitle: true,
         dialogFormVisible: false,
+        dialogWithdraw: false,
+        subFlag: false,
         pageNum: 1,
         formLabelWidth: '100px',
         companyForm: {
@@ -98,12 +121,26 @@
           adminAccount: [
             { required: true, message: '请输入管理员账户', trigger: 'blur' }
           ],
-          adminPassword: [
+          password: [
             { required: true, message: '请输入管理员密码', trigger: 'blur' }
           ],
           shopName: [
             { required: true, message: '请输入商家名称', trigger: 'blur' }
           ]
+        },
+        withdrawRule: {
+          address: [
+            { required: true, message: '请输入提现地址', trigger: 'blur' }
+          ],
+          value: [
+            { required: true, message: '请输入提现金额', trigger: 'blur' }
+          ]
+        },
+        withdrawForm: {
+          address: '',
+          password: '',
+          shopId: '',
+          value: ''
         }
       }
     },
@@ -113,13 +150,10 @@
       })
     },
     mounted() {
-      const un = window.localStorage.getItem('permission')
-      if (un) {
-        this.permission = JSON.parse(un).adminType
-      }
-      this.getTableData('?pageNum=1&pageSize=20&orderBy=created_at')
+      this.getTableData('pageNum=1&pageSize=20&orderBy=status desc,created_at desc')
     },
     methods: {
+      subWithdraw() {},
       createCompanyFun() {
         this.dialogFormVisible = true
         this.dialogTitle = true
@@ -129,20 +163,23 @@
       },
       handleCurrentChange(t) {
         this.pageNum = t
-        this.getTableData(`?pageNum=${t}&pageSize=20&orderBy=created_at`)
+        this.getTableData(`pageNum=${t}&pageSize=20&orderBy=status desc,created_at desc`)
       },
       ajaxFormHandler(t, f, n) {
         if (t) {
           this.$store.dispatch('postCreateCompany', f).then(() => {
             this.subFlag = false
-            this.getTableData('?pageNum=1&pageSize=20&orderBy=created_at')
+            this.$refs[n].resetFields()
+            this.getTableData('pageNum=1&pageSize=20&orderBy=status desc,created_at desc')
+            this.$message.success('创建成功')
           }).catch(() => {
-
+            this.subFlag = false
           })
         } else {
-          this.$store.dispatch('putCreateList', f).then(() => {
+          this.$store.dispatch('putCreateCompany', f).then(() => {
             this.subFlag = false
-            this.getTableData('?pageNum=1&pageSize=20&orderBy=created_at')
+            this.getTableData('pageNum=1&pageSize=20&orderBy=status desc,created_at desc')
+            this.$message.success('修改成功')
           }).catch(() => {
             this.subFlag = false
           })
@@ -155,8 +192,7 @@
           inputType: 'password',
           cancelButtonText: '取消'
         }).then(({ value }) => {
-          this.companyForm.password = value
-          const un = JSON.parse(window.localStorage.getItem('user'))
+          this.companyForm.adminPassword = value
           if (!value) {
             this.$message({
               type: 'error',
@@ -169,8 +205,8 @@
               this.subFlag = true
               const copyForm = {}
               Object.assign(copyForm, this.companyForm)
-              copyForm.adminPassword = md5(md5(copyForm.adminPassword) + this.companyForm.adminAccount)
-              copyForm.password = md5(md5(copyForm.password) + un.username)
+              copyForm.password = md5(md5(copyForm.password) + this.companyForm.adminAccount)
+              copyForm.adminPassword = md5(md5(copyForm.adminPassword) + this.manage.username)
               this.ajaxFormHandler(this.dialogTitle, copyForm, ruleForm)
             } else {
               this.subFlag = false
@@ -184,15 +220,56 @@
         }).catch(() => {
         })
       },
-      editManage() {
+      editManage(obj) {
         this.dialogFormVisible = true
         this.dialogTitle = false
-        this.companyForm = {
-          name: '大西瓜',
-          account: 'asdfasdf',
-          password: '123123',
-          status: '1'
-        }
+        Object.assign(this.companyForm, obj)
+        this.companyForm.adminAccount = obj.adminName
+      },
+      withDrawManage(obj) {
+        this.dialogWithdraw = true
+        this.withdrawForm.shopId = obj.shopId
+      },
+      ajaxWithdrawHandler(ruleForm) {
+        this.$prompt('请输入主管理员密码确认提交信息', {
+          confirmButtonText: '确定',
+          inputType: 'password',
+          cancelButtonText: '取消'
+        }).then(({ value }) => {
+          this.withdrawForm.password = value
+          if (!value) {
+            this.$message({
+              type: 'error',
+              message: '请输入管理员密码'
+            })
+            return
+          }
+          this.$refs[ruleForm].validate((valid) => {
+            if (valid) {
+              this.subFlag = true
+              const copyForm = {}
+              Object.assign(copyForm, this.withdrawForm)
+              copyForm.password = md5(md5(copyForm.password) + this.manage.username)
+              this.$store.dispatch('postWithdraw', copyForm).then(() => {
+                this.$message({
+                  type: 'success',
+                  message: '提交成功'
+                })
+                this.subFlag = false
+              }).catch(() => {
+                this.subFlag = false
+              })
+            } else {
+              this.subFlag = false
+              this.$message({
+                type: 'error',
+                message: '请输入正确信息'
+              })
+              return false
+            }
+          })
+        }).catch(() => {
+        })
       }
     }
   }

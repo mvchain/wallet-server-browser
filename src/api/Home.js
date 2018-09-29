@@ -8,7 +8,39 @@ export function companyList(data) {
 }
 export function createCompany(data) {
   return request({
-    url: '/dashbord/shop?',
+    url: '/dashbord/shop',
+    method: 'post',
+    data
+  })
+}
+export function modifyCompany(data) {
+  return request({
+    url: '/dashbord/shop',
+    method: 'put',
+    data
+  })
+}
+export function rwAjax(data) {
+  return request({
+    url: '/dashbord/transaction?' + data,
+    method: 'get'
+  })
+}
+export function addressAjax(data) {
+  return request({
+    url: '/dashbord/account?' + data,
+    method: 'get'
+  })
+}
+export function addressInfo(data) {
+  return request({
+    url: '/dashbord/account/count',
+    method: 'get'
+  })
+}
+export function withdrawAjax(data) {
+  return request({
+    url: '/dashbord/withdraw',
     method: 'post',
     data
   })

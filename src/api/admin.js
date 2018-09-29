@@ -22,7 +22,13 @@ export function modifyAdmin(data) {
 }
 export function deleteAdmin(data) {
   return request({
-    url: '/dashbord/admin/' + data,
+    url: `/dashbord/admin/${data.id}?adminPassword=${data.pwd}`,
     method: 'delete'
+  })
+}
+export function managePermission(data) {
+  return request({
+    url: '/dashbord/account/permission?userId=' + data,
+    method: 'get'
   })
 }

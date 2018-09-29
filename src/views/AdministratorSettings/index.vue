@@ -47,9 +47,6 @@
         <el-form-item label="密码：" :label-width="formLabelWidth" prop="password">
           <el-input type="password" v-model="manageForm.password"></el-input>
         </el-form-item>
-        <el-form-item v-if="reviewSwitch" label="管理员控制：" prop="delivery" :label-width="formLabelWidth">
-          <el-switch active-value="1" inactive-value="0" v-model="manageForm.permissionAdmin"></el-switch>
-        </el-form-item>
         <el-form-item v-if="permission === 2" label="订单审核：" prop="delivery" :label-width="formLabelWidth">
           <el-switch active-value="1" inactive-value="0" v-model="manageForm.permissionReview"></el-switch>
         </el-form-item>
@@ -73,11 +70,14 @@
   import md5 from 'blueimp-md5'
   export default {
     name: 'AdministratorSettings',
+    props: {
+      permission: Number,
+      manage: Object
+    },
     data() {
       return {
         dialogTitle: true,
         reviewSwitch: false,
-        permission: '',
         dialogFormVisible: false,
         subFlag: false,
         formLabelWidth: '100px',
@@ -86,10 +86,9 @@
           accountName: '',
           adminPassword: '',
           password: '',
-          permissionAdmin: 0,
-          permissionCollect: 0,
-          permissionWithdraw: 0,
-          permissionReview: 0,
+          permissionCollect: '0',
+          permissionWithdraw: '0',
+          permissionReview: '0',
           userId: '',
           username: ''
         },
@@ -107,11 +106,7 @@
       }
     },
     mounted() {
-      const un = window.localStorage.getItem('permission')
-      if (un) {
-        this.permission = JSON.parse(un).adminType
-      }
-      this.getTableData('?pageNum=1&pageSize=20&orderBy=created_at')
+      this.getTableData('pageNum=1&pageSize=20&orderBy=created_at')
     },
     computed: {
       ...mapGetters({
@@ -124,25 +119,27 @@
       },
       handleCurrentChange(t) {
         this.pageNum = t
-        this.getTableData(`?pageNum=${t}&pageSize=20&orderBy=created_at`)
+        this.getTableData(`pageNum=${t}&pageSize=20&orderBy=created_at`)
       },
       ajaxFormHandler(t, f, n) {
         if (t) {
           this.$store.dispatch('postCreateList', f).then(() => {
             this.subFlag = false
-            this.getTableData('?pageNum=1&pageSize=20&orderBy=created_at')
+            this.$refs[n].resetFields()
+            this.getTableData('pageNum=1&pageSize=20&orderBy=created_at')
+            this.$message.success('创建成功')
           }).catch(() => {
-
+            this.subFlag = false
           })
         } else {
           this.$store.dispatch('putCreateList', f).then(() => {
             this.subFlag = false
-            this.getTableData('?pageNum=1&pageSize=20&orderBy=created_at')
+            this.getTableData('pageNum=1&pageSize=20&orderBy=created_at')
+            this.$message.success('修改成功')
           }).catch(() => {
             this.subFlag = false
           })
         }
-        this.$refs[n].resetFields()
       },
       subForm(ruleForm) {
         this.$prompt('请输入主管理员密码确认提交信息', {
@@ -151,7 +148,6 @@
           cancelButtonText: '取消'
         }).then(({ value }) => {
           this.manageForm.adminPassword = value
-          const un = JSON.parse(window.localStorage.getItem('user'))
           if (!value) {
             this.$message({
               type: 'error',
@@ -165,7 +161,8 @@
               const copyForm = {}
               Object.assign(copyForm, this.manageForm)
               copyForm.password = md5(md5(copyForm.password) + this.manageForm.accountName)
-              copyForm.adminPassword = md5(md5(copyForm.adminPassword) + un.username)
+              copyForm.adminPassword = md5(md5(copyForm.adminPassword) + this.manage.username)
+              copyForm.userId = copyForm.id
               this.ajaxFormHandler(this.dialogTitle, copyForm, ruleForm)
             } else {
               this.subFlag = false
@@ -189,20 +186,26 @@
           inputType: 'password',
           cancelButtonText: '取消'
         }).then(({ value }) => {
-          // this.$store.dispatch('deleteAdminList', id).then(() => {
-          //   this.$message.success('删除成功')
-          // }).catch()
-          this.$message.success('删除成功')
+          const v = md5(md5(value) + this.manage.username)
+          this.$store.dispatch('deleteAdminList', { id: id, pwd: v }).then(() => {
+            this.$message.success('删除成功')
+            this.getTableData('pageNum=1&pageSize=20&orderBy=created_at')
+          }).catch()
         }).catch(() => {
         })
       },
       editManage(obj) {
-        this.dialogFormVisible = true
-        if (this.permission === 2) {
-          this.reviewSwitch = true
-        }
-        this.dialogTitle = false
-        this.manageForm = obj
+        this.$store.dispatch('getManagePermission', obj.id).then((data) => {
+          const opt = {}
+          Object.assign(opt, obj)
+          this.dialogFormVisible = true
+          if (this.permission === 2) {
+            this.reviewSwitch = true
+          }
+          opt.password = ''
+          this.dialogTitle = false
+          this.permissionFormat(data.list, opt)
+        }).catch()
       },
       adminTypeFormat(v, column) {
         if (v.adminType === 0 || v.adminType === 2) {
@@ -210,6 +213,19 @@
         } else if (v.adminType === 1 || v.adminType === 3) {
           return '子管理员'
         }
+      },
+      permissionFormat(list, f) {
+        list.filter((item, idx, arr) => {
+          switch (item.permissionId) {
+            case 2:
+              f.permissionCollect = '1'
+              break
+            case 3:
+              f.permissionWithdraw = '1'
+              break
+          }
+        })
+        this.manageForm = f
       }
     }
   }

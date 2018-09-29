@@ -1,7 +1,19 @@
 <template>
   <div class="recharge">
     <el-row :gutter="20">
-      <el-col :span="16">
+      <el-col :span="6">
+        <el-button>汇总导入</el-button>
+        <el-button @click="dialogFormVisible = true">汇总导出</el-button>
+      </el-col>
+      <el-col :span="10">
+        <el-select v-model="companyName" placeholder="请选择">
+          <el-option
+            v-for="item in companyList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
+          </el-option>
+        </el-select>
         <el-date-picker
           v-model="rechargeTime"
           type="daterange"
@@ -59,15 +71,29 @@
         </el-pagination>
       </div>
     </div>
+    <el-dialog  width="400px" title="汇总导出设置" :visible.sync="dialogFormVisible">
+      <el-checkbox v-model="checkStatus">是否彻底清空所有用户地址内余额</el-checkbox>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="exportHandler">导 出</el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
 <script>
+  import {mapGetters} from 'vuex'
   export default {
     name: 'recharge',
+    props: {
+      permission: Number,
+      manage: Object
+    },
     data() {
       return {
         rechargeTime: '',
+        dialogFormVisible: false,
         pickerOptions: {
           shortcuts: [{
             text: '最近一周',
@@ -139,12 +165,41 @@
             from: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
             hash: '0x96ab8901985b15f27a26e0f0b6fe1bba6aeb285268c604c6f8d556a400788bcf'
           }
-        ]
+        ],
+        companyList: [
+          {
+            name: '全部商家',
+            id: '1'
+          },
+          {
+            name: '淘宝商家',
+            id: '2'
+          },
+          {
+            name: '京东商家',
+            id: '3'
+          }
+        ],
+        companyName: '1',
+        checkStatus: '0',
       }
     },
+    computed: {
+      ...mapGetters({
+        rwList: 'rwList'
+      })
+    },
+    mounted() {
+      this.getTableData('pageNum=1&pageSize=20&orderBy=created_at desc')
+    },
     methods: {
+      getTableData(payload) {
+        this.$store.dispatch('getRWList', payload).then().catch()
+      },
+      exportHandler() {
+        console.log(this.checkStatus)
+      },
       importFun() {
-        console.log(this.rechargeTime)
       },
       handleCurrentChange(t) {
         console.log(t)

@@ -33,18 +33,17 @@ export const constantRouterMap = [
     }]
   },
   {
-    path: '/AdministratorSettings',
+    path: '/address',
     component: Layout,
-    redirect: '/AdministratorSettings/Setting',
-
-    name: 'AdministratorSettings',
-    meta: { title: '设置', icon: 'teacher', adminType: '0/2' },
+    redirect: '/address/setAddr',
+    name: 'address',
+    meta: { title: '地址', icon: 'teacher', adminType: '0/1' },
     children: [
       {
-        path: 'Setting',
-        name: 'Setting',
-        component: _import('AdministratorSettings/index'),
-        meta: { title: '管理员设置', icon: 'teacher' }
+        path: 'setAddr',
+        name: 'setAddr',
+        component: _import('address/index'),
+        meta: { title: '地址管理', icon: 'teacher' }
       }
     ]
   },
@@ -69,6 +68,23 @@ export const constantRouterMap = [
       }
     ]
   },
+  {
+    path: '/AdministratorSettings',
+    component: Layout,
+    redirect: '/AdministratorSettings/Setting',
+
+    name: 'AdministratorSettings',
+    meta: { title: '设置', icon: 'teacher', adminType: '0/2' },
+    children: [
+      {
+        path: 'Setting',
+        name: 'Setting',
+        component: _import('AdministratorSettings/index'),
+        meta: { title: '管理员设置', icon: 'teacher' }
+      }
+    ]
+  },
+
 
   {
     path: '/rechargeWithdraw',
@@ -127,21 +143,7 @@ export const constantRouterMap = [
       }
     ]
   },
-  {
-    path: '/address',
-    component: Layout,
-    redirect: '/address/setAddr',
-    name: 'address',
-    meta: { title: '地址', icon: 'teacher', adminType: '0/1' },
-    children: [
-      {
-        path: 'setAddr',
-        name: 'setAddr',
-        component: _import('address/index'),
-        meta: { title: '地址管理', icon: 'teacher' }
-      }
-    ]
-  },
+
 
   { path: '*', redirect: '/404', hidden: true }
 ]

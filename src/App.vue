@@ -12,7 +12,7 @@
     mounted() {
       window.setInterval(showMsgIcon, 1500000)
       function showMsgIcon() {
-        const user = window.sessionStorage.getItem('user')
+        const user = window.localStorage.getItem('user')
         if (user) {
           store.dispatch('getReferToken')
         }
