@@ -1,12 +1,13 @@
 import { adminList, createAdmin, deleteAdmin, modifyAdmin, managePermission } from '@/api/admin'
-import { companyList, createCompany, rwAjax, addressAjax, addressInfo, modifyCompany, withdrawAjax } from '@/api/Home'
+import { companyList, createCompany, rwAjax, addressAjax, addressInfo, modifyCompany, withdrawAjax, importSign, statisticsData } from '@/api/Home'
 const center = {
   state: {
     adminList: {},
     companyList: {},
     rwList: {},
     addressList: {},
-    addressData: {}
+    addressData: {},
+    statisticsTable: {}
   },
 
   mutations: {
@@ -24,6 +25,9 @@ const center = {
     },
     SET_ADDRESS_DATA: (state, payload) => {
       state.addressData = payload
+    },
+    SET_STATISTICS_DATA: (state, payload) => {
+      state.statisticsTable = payload
     }
   },
 
@@ -140,7 +144,26 @@ const center = {
           reject(error)
         })
       })
-    }
+    },
+    getSign({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        importSign().then(res => {
+          resolve(res.data)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    getStatisticsData({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        rwAjax(payload).then(res => {
+          statisticsData('SET_STATISTICS_DATA', res.data)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
   }
 }
 

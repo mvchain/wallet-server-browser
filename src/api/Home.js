@@ -45,3 +45,16 @@ export function withdrawAjax(data) {
     data
   })
 }
+// 导出签名
+export function importSign(data) {
+  return request({
+    url: '/dashbord/export/sign',
+    method: 'get'
+  })
+}
+export function statisticsData(data) {
+  return request({
+    url: '/dashbord/transaction/count?' + data,
+    method: 'get'
+  })
+}

@@ -32,3 +32,4 @@ export function managePermission(data) {
     method: 'get'
   })
 }
+

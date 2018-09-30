@@ -49,8 +49,18 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
   export default {
     name: 'rechargeData',
+    props: {
+      permission: Number,
+      manage: Object
+    },
+    computed: {
+      ...mapGetters({
+        statisticsTable: 'statisticsTable'
+      })
+    },
     data() {
       return {
         pickerOptions: {
@@ -101,7 +111,14 @@
         ]
       }
     },
+    mounted() {
+      // startTime=1&stopTime=2&shopId=3&fromAddress=4&toAddress=5&hash=6&oprType=7&transactionId=8&transactionStatus=9&shopWithdraw=10&pageNum=11&pageSize=12&orderBy=13
+      this.getTableData('oprType=1&dateType=2&startTime=3&stopTime=4')
+    },
     methods: {
+      getTableData(payload) {
+        this.$store.dispatch('getStatisticsData', payload).then().catch()
+      },
       importFun() {
         console.log(this.rechargeTime)
       },

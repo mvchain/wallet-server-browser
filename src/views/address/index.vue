@@ -19,7 +19,7 @@
         </el-select>
       </el-col>
       <el-col :span="6">
-        <el-select v-model="companyStatus" placeholder="请选择">
+        <el-select @change="statusChange" v-model="companyStatus" placeholder="请选择">
           <el-option
             v-for="item in statusList"
             :key="item.id"
@@ -113,18 +113,22 @@
     },
     methods: {
       searchHandler() {
-        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&tokenType=ETH&address=${this.searchText}&isUsed=${this.companyStatus}&balance=6&userId=7&shopId=${this.companyName}`)
+        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&balance=6&userId=7&shopId=${this.companyName}`)
       },
       changeFun(v) {
         this.companyName = v
-        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&tokenType=ETH&address=${this.searchText}&isUsed=${this.companyStatus}&balance=6&userId=7&shopId=${v}`)
+        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&balance=6&userId=7&shopId=${v}`)
+      },
+      statusChange(v) {
+        this.companyStatus = v
+        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&balance=6&userId=7&shopId=${this.companyName}`)
       },
       getTableData(payload) {
         this.$store.dispatch('getAddressList', payload).then().catch()
       },
       handleCurrentChange(t) {
         this.pageNum = t
-        this.getTableData(`pageNum=${t}&pageSize=20&tokenType=ETH&address=${this.searchText}&isUsed=${this.companyStatus}&balance=6&userId=7&shopId=${this.companyName}`)
+        this.getTableData(`pageNum=${t}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&balance=6&userId=7&shopId=${this.companyName}`)
       },
       exportTable() {
         console.log('导出表格')

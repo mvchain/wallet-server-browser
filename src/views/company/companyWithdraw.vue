@@ -1,25 +1,35 @@
 <template>
   <div class="company-withdraw">
     <el-row :gutter="20">
-      <el-col :span="2">
-        <el-button @click="clickAgree">同意已勾选</el-button>
+      <el-col :span="5">
+        <el-col :span="7">
+        <el-upload
+          class="upload-demo"
+          :action="action"
+          :headers="uploadHead"
+          :on-success="successFun"
+          :on-error="errorFun"
+          :show-file-list="false"
+          multiple
+          :limit="3"
+        >
+          <el-button >导入</el-button>
+        </el-upload>
+      </el-col>
+        <el-button @click="exportFun">导出</el-button>
       </el-col>
       <el-col :span="3">
-        <el-button>导入</el-button>
-        <el-button>导出</el-button>
-      </el-col>
-      <el-col :span="3">
-        <el-select v-model="companyName" placeholder="请选择">
+        <el-select @change="changeFun" v-model="companyName" placeholder="请选择">
           <el-option
-            v-for="item in companyList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id">
+            v-for="item in companyList.list"
+            :key="item.shopId"
+            :label="item.shopName"
+            :value="item.shopId">
           </el-option>
         </el-select>
       </el-col>
       <el-col :span="3">
-        <el-select v-model="companyStatus" placeholder="请选择">
+        <el-select @change="statusChange" v-model="companyStatus" placeholder="请选择">
           <el-option
             v-for="item in statusList"
             :key="item.id"
@@ -31,14 +41,13 @@
       <el-col :span="7">
         <el-date-picker
           v-model="rechargeTime"
+          @change="timeChange"
           type="daterange"
           align="right"
           unlink-panels
-          :picker-options="pickerOptions"
           range-separator="至"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
-          value-format="timestamp"
         >
         </el-date-picker>
         <el-button @click="importFun">表格导出</el-button>
@@ -46,37 +55,33 @@
 
       <el-col :span="6">
         <el-input placeholder="输入单号、目标地址" v-model="searchText" class="input-with-select">
-          <el-button slot="append" icon="el-icon-search">搜索</el-button>
+          <el-button @click="searchHandler" slot="append" icon="el-icon-search">搜索</el-button>
         </el-input>
       </el-col>
     </el-row>
     <div style="margin-top:20px;">
       <el-table
-        :data="tableData"
+        :data="rwList.list"
         border
         style="width: 100%">
         <el-table-column
-          type="selection"
-        >
-        </el-table-column>
-        <el-table-column
-          prop="time"
+          prop="createdAtStr"
           label="时间">
         </el-table-column>
         <el-table-column
-          prop="order"
+          prop="transactionId"
           label="单号">
         </el-table-column>
         <el-table-column
-          prop="company"
+          prop="shopName"
           label="商家">
         </el-table-column>
         <el-table-column
-          prop="founds"
+          prop="value"
           label="提币金额">
         </el-table-column>
         <el-table-column
-          prop="from"
+          prop="fromAddress"
           width="400"
           label="目标地址">
         </el-table-column>
@@ -89,17 +94,10 @@
           </template>
         </el-table-column>
         <el-table-column
+          prop="statusStr"
           label="状态">
           <template slot-scope="scope">
-            <el-dropdown>
-              <span class="el-dropdown-link">
-                待审核<i class="el-icon-arrow-down el-icon--right"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>同意</el-dropdown-item>
-                <el-dropdown-item>拒绝</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            {{scope.row.transactionStatus | statusFliter}}
           </template>
         </el-table-column>
       </el-table>
@@ -108,7 +106,7 @@
           @current-change="handleCurrentChange"
           :page-size="20"
           layout="prev, pager, next"
-          :total="50">
+          :total="rwList.total">
         </el-pagination>
       </div>
     </div>
@@ -116,157 +114,129 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
+  import { formatTime } from '@/utils'
+  import { getToken } from '@/utils/auth'
   export default {
     name: 'companyWithdraw',
+    computed: {
+      ...mapGetters({
+        rwList: 'rwList',
+        companyList: 'companyList'
+      })
+    },
+    props: {
+      permission: Number,
+      manage: Object
+    },
+    mounted() {
+      // startTime=1&stopTime=2&shopId=3&fromAddress=4&toAddress=5&hash=6&oprType=7&transactionId=8&transactionStatus=9&shopWithdraw=10&pageNum=11&pageSize=12&orderBy=13
+      this.getTableData('pageNum=1&pageSize=20&shopWithdraw=1&orderBy=created_at desc')
+      this.$store.dispatch('getCompanyList', 'pageNum=1&pageSize=1000&orderBy=status desc,created_at desc').then(() => {
+        this.companyList.list.unshift({ shopName: '全部商家', shopId: '' })
+      }).catch()
+    },
     data() {
       return {
         rechargeTime: '',
-        pickerOptions: {
-          shortcuts: [{
-            text: '最近一周',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近一个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近三个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit('pick', [start, end]);
-            }
-          }]
+        action: window.urlData.url + '/dashbord/sign/import',
+        uploadHead: {
+          Authorization: getToken()
         },
         searchText: '',
-        timeChange: [
-          {
-            name: '全部状态',
-            id: 0
-          },
-          {
-            name: '待审核',
-            id: 1
-          },
-          {
-            name: '待提币',
-            id: 2
-          },
-          {
-            name: '拒绝',
-            id: 3
-          },
-          {
-            name: '正在提币',
-            id: 4
-          },
-          {
-            name: '提币成功',
-            id: 5
-          },
-          {
-            name: '提币失败',
-            id: 6
-          }
-        ],
+        transactionId: '',
+        pageNum: '1',
+        durationTime: 3,
+        fromAddress: '',
         dateType: 0,
-        tableData: [
-          {
-            time: '2017/01/11',
-            order: 'W123123123',
-            company: '京东商城',
-            founds: '2000ETH',
-            to: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            from: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            hash: '0x96ab8901985b15f27a26e0f0b6fe1bba6aeb285268c604c6f8d556a400788bcf'
-          },
-          {
-            time: '2017/01/11',
-            order: 'W123123123',
-            company: '京东商城',
-            founds: '2000ETH',
-            to: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            from: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            hash: '0x96ab8901985b15f27a26e0f0b6fe1bba6aeb285268c604c6f8d556a400788bcf'
-          },
-          {
-            time: '2017/01/11',
-            order: 'W123123123',
-            company: '京东商城',
-            founds: '2000ETH',
-            to: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            from: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            hash: '0x96ab8901985b15f27a26e0f0b6fe1bba6aeb285268c604c6f8d556a400788bcf'
-          },
-          {
-            time: '2017/01/11',
-            order: 'W123123123',
-            company: '京东商城',
-            founds: '2000ETH',
-            to: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            from: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            hash: '0x96ab8901985b15f27a26e0f0b6fe1bba6aeb285268c604c6f8d556a400788bcf'
-          },
-          {
-            time: '2017/01/11',
-            order: 'W123123123',
-            company: '京东商城',
-            founds: '2000ETH',
-            to: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            from: '0x648662ac074c16f5a807c7c9a979cb2786576cae',
-            hash: '0x96ab8901985b15f27a26e0f0b6fe1bba6aeb285268c604c6f8d556a400788bcf'
-          }
-        ],
-        companyName: '1',
-        companyStatus: '1',
-        companyList: [
-          {
-            name: '全部商家',
-            id: '1'
-          },
-          {
-            name: '淘宝商家',
-            id: '2'
-          },
-          {
-            name: '京东商家',
-            id: '3'
-          }
-        ],
+        companyName: '',
+        companyStatus: '',
         statusList: [
           {
             name: '全部状态',
+            id: ''
+          },
+          {
+            name: '待审核',
             id: '1'
           },
           {
-            name: '已分配',
+            name: '待签名',
             id: '2'
           },
           {
-            name: '未分配',
+            name: '拒绝',
             id: '3'
+          },
+          {
+            name: '正在提币',
+            id: '4'
+          },
+          {
+            name: '提币成功',
+            id: '5'
+          },
+          {
+            name: '失败',
+            id: '6'
           }
-        ]
+        ],
+        startTime: '2000/06/07 00:00:00',
+        stopTime: '2099/06/07 00:00:00'
       }
     },
     methods: {
+      searchHandler() {
+        this.searchText = this.searchText.replace(/\s/g, '')
+        if (this.searchText.length !== 42 && this.searchText.length !== 34) {
+          this.transactionId = this.searchText
+          this.fromAddress = ''
+        } else if (this.searchText === '') {
+          this.transactionId = ''
+          this.fromAddress = ''
+        } else {
+          this.fromAddress = this.searchText
+          this.transactionId = ''
+        }
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=1&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+      },
+      timeChange() {
+        this.timeFormat()
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=1&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+      },
+      timeFormat() {
+        if (this.rechargeTime === null) {
+          this.startTime = '2000/06/07 00:00:00'
+          this.stopTime = formatTime(new Date(), false, 'd')
+          return
+        }
+        this.startTime = formatTime(this.rechargeTime[0], false, 'd')
+        this.stopTime = formatTime(this.rechargeTime[1], true, 'd')
+      },
+      changeFun(v) {
+        this.companyName = v
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=1&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+      },
+      statusChange(v) {
+        this.companyStatus = v
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=1&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+      },
+      getTableData(payload) {
+        this.$store.dispatch('getRWList', payload).then().catch()
+      },
+      exportFun() {
+        this.$store.dispatch('getSign').then((s) => {
+          window.open(`${window.urlData.url}/dashbord/sign/export?sign=${s}&oprType=withdraw&shopWithdraw=1`)
+        }).catch()
+      },
       importFun() {
-        console.log(this.rechargeTime)
+        this.$store.dispatch('getSign').then((s) => {
+          window.open(`${window.urlData.url}/dashbord/transaction/export?sign=${s}&startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=1`)
+        }).catch()
       },
       handleCurrentChange(t) {
-        console.log(t)
-      },
-      changeType(t) {
+        this.pageNum = t
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=1&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
       },
       clickAgree() {
         this.$confirm('是否同意所有审核?', '提示', {
@@ -280,6 +250,25 @@
           })
         }).catch(() => {
         })
+      },
+      successFun(s) {
+        if (s.code !== 200) {
+          this.$message.error(`导入失败${s.message}`)
+        } else {
+          window.setInterval(() => {
+            this.durationTime--
+            if (this.durationTime === -1) {
+              this.$router.go(0)
+            }
+          }, 1000)
+          this.$message.success({
+            message: '上传成功,3秒后刷新页面',
+            duration: 3000
+          })
+        }
+      },
+      errorFun() {
+        this.$message.error('导入失败')
       }
     }
   }
