@@ -2,7 +2,7 @@
   <section class="app-main">
     <transition name="fade" mode="out-in">
       <!-- <router-view :key="key"></router-view> -->
-      <router-view :permission="permission" :manage="manage"></router-view>
+      <router-view :permission="permission" :manage="manage" ></router-view>
     </transition>
   </section>
 </template>
@@ -25,11 +25,12 @@ export default {
     if (us) {
       this.manage = JSON.parse(us)
     }
-  },
-  computed: {
-    // key() {
-    //   return this.$route.name !== undefined ? this.$route.name + +new Date() : this.$route + +new Date()
-    // }
+    this.$store.dispatch('getCompanyList', 'pageNum=1&pageSize=1000&orderBy=status desc,created_at desc').then((res) => {
+      const a = {}
+      Object.assign(a, res)
+      a.list.unshift({ shopName: '全部商家', shopId: '' })
+      this.$store.commit('SET_COPY_LIST', a)
+    }).catch()
   }
 }
 </script>

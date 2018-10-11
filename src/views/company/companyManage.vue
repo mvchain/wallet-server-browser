@@ -35,8 +35,16 @@
         <el-table-column
           label="操作">
           <template slot-scope="scope">
-            <el-button plain type="primary" size="small" @click="editManage(scope.row)">编辑</el-button>
-            <el-button plain type="primary" size="small" @click="withDrawManage(scope.row)">提现</el-button>
+            <el-dropdown @command="handleCommand">
+              <span class="el-dropdown-link">
+                操作<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="[scope.row, 1]">编辑</el-dropdown-item>
+                <el-dropdown-item :command="[scope.row, 2]">ETH提现</el-dropdown-item>
+                <el-dropdown-item :command="[scope.row, 3]">BTC提现</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </template>
         </el-table-column>
         <el-table-column
@@ -79,7 +87,7 @@
       <el-form :model="withdrawForm" ref="withdrawForm" :rule="withdrawRule">
         <el-form-item label="商家名称：" :label-width="formLabelWidth" prop="address">
           <el-col :span="12"><span>{{withdrawForm.shopName}}</span></el-col>
-          <el-col :span="12"><span>钱包余额：{{withdrawForm.balance}}</span></el-col>
+          <el-col :span="12"><span>钱包余额：{{withdrawForm.balance}}{{tokenName}}</span></el-col>
         </el-form-item>
         <el-form-item label="提现地址：" :label-width="formLabelWidth" prop="address">
           <el-input v-model="withdrawForm.address"></el-input>
@@ -110,6 +118,7 @@
     },
     data() {
       return {
+        tokenName: '',
         dialogTitle: true,
         dialogFormVisible: false,
         dialogWithdraw: false,
@@ -165,7 +174,21 @@
       this.getTableData('pageNum=1&pageSize=20&orderBy=status desc,created_at desc')
     },
     methods: {
-      subWithdraw() {},
+      handleCommand(v) {
+        switch (v[1]) {
+          case 1:
+            this.editManage(v[0])
+            break
+          case 2:
+            this.tokenName = 'ETH'
+            this.withDrawManage(v[0])
+            break
+          case 3:
+            this.tokenName = 'BTC'
+            this.withDrawManage(v[0])
+            break
+        }
+      },
       createCompanyFun() {
         this.dialogFormVisible = true
         this.dialogTitle = true

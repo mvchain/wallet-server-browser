@@ -1,38 +1,107 @@
 <template>
-  <div class="withdraw-data">
+  <div class="recharge-data">
     <el-row :gutter="20">
-      <el-col :span="16">
+      <el-col :span="8">
+        <el-select @change="changeFun" v-model="balanceTitle" placeholder="请选择">
+          <el-option
+            v-for="item in balanceList"
+            :key="item.value"
+            :label="item.title"
+            :value="item.value">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="3">
+        <el-select @change="changeFun" v-model="companyName" placeholder="请选择">
+          <el-option
+            v-for="item in copyList.list"
+            :key="item.shopId"
+            :label="item.shopName"
+            :value="item.shopId">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="3">
+        <el-select v-model="dateType" @change="changeType" placeholder="请选择">
+          <el-option
+            v-for="(v, k) in timeChange"
+            :key="k"
+            :label="v.name"
+            :value="v.id">
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="10">
+        <template>
+          <el-date-picker
+            v-model="rechargeTime"
+            v-show="dateType === 0"
+            type="daterange"
+            align="right"
+            :clearable="false"
+            :default-time="['00:00:00', '23:59:59']"
+            unlink-panels
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+          >
+          </el-date-picker>
+        </template>
         <el-date-picker
-          v-model="rechargeTime"
-          type="daterange"
-          align="right"
-          unlink-panels
+          v-model="rangeWeek[0]"
+          v-show="dateType === 1"
+          :clearable="false"
+          type="week"
           :default-time="['00:00:00', '23:59:59']"
-          :picker-options="pickerOptions"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          value-format="timestamp"
+          format="yyyy 第 WW 周"
         >
         </el-date-picker>
-        <el-button @click="importFun">表格导出</el-button>
+        <el-date-picker
+          v-model="rangeWeek[1]"
+          v-show="dateType === 1"
+          :clearable="false"
+          type="week"
+          :default-time="['00:00:00', '23:59:59']"
+          format="yyyy 第 WW 周"
+        >
+        </el-date-picker>
+        <template>
+          <el-date-picker
+            v-model="rangeMonth[0]"
+            v-show="dateType === 2"
+            :clearable="false"
+            :default-time="['00:00:00', '23:59:59']"
+            type="month"
+          >
+          </el-date-picker>
+          <el-date-picker
+            v-model="rangeMonth[1]"
+            v-show="dateType === 2"
+            :clearable="false"
+            :default-time="['00:00:00', '23:59:59']"
+            type="month"
+          >
+          </el-date-picker>
+        </template>
+        <el-button @click="resetSearch">重置</el-button>
+        <el-button @click="exportTable">导出表格</el-button>
       </el-col>
     </el-row>
     <div style="margin-top:20px;">
       <el-table
-        :data="tableData"
+        :data="statisticsTable.list"
         border
         style="width: 100%">
         <el-table-column
-          prop="time"
+          prop="dateStr"
           label="日期">
         </el-table-column>
         <el-table-column
-          prop="founds"
-          label="充值金额">
+          prop="value"
+          label="提币金额">
         </el-table-column>
         <el-table-column
-          prop="order"
+          prop="orderCount"
           label="订单数">
         </el-table-column>
       </el-table>
@@ -41,7 +110,7 @@
           @current-change="handleCurrentChange"
           :page-size="20"
           layout="prev, pager, next"
-          :total="50">
+          :total="statisticsTable.total">
         </el-pagination>
       </div>
     </div>
@@ -49,71 +118,111 @@
 </template>
 
 <script>
+  import { mapGetters } from 'vuex'
+  import { formatTime } from '@/utils'
+  // import { getToken } from '@/utils/auth'
   export default {
     name: 'withdrawData',
+    props: {
+      permission: Number,
+      manage: Object
+    },
+    computed: {
+      ...mapGetters({
+        statisticsTable: 'statisticsTable',
+        copyList: 'copyList'
+      })
+    },
+    watch: {
+      'rechargeTime': function(v, o) {
+        this.formatTime(this.rechargeTime, 'd')
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=withdraw&shopId=${this.companyName}`)
+      },
+      'rangeWeek': function() {
+        this.formatTime(this.rangeWeek, 'w')
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=withdraw&shopId=${this.companyName}`)
+      },
+      'rangeMonth': function() {
+        this.formatTime(this.rangeMonth, 'm')
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=withdraw&shopId=${this.companyName}`)
+      }
+    },
     data() {
       return {
-        pickerOptions: {
-          shortcuts: [{
-            text: '最近一周',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近一个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit('pick', [start, end]);
-            }
-          }, {
-            text: '最近三个月',
-            onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit('pick', [start, end]);
-            }
-          }]
-        },
-        rechargeTime: '',
-        searchText: '',
-        tableData: [
+        rechargeTime: [],
+        rangeWeek: [],
+        rangeMonth: [],
+        dateType: 0,
+        startTime: '',
+        stopTime: '',
+        companyName: '',
+        timeChange: [
           {
-            time: '2017/01/11',
-            founds: '2000ETH',
-            order: '123'
+            name: '日数据',
+            id: 0
           },
           {
-            time: '2017/01/11',
-            founds: '2000ETH',
-            order: '123'
+            name: '周数据',
+            id: 1
           },
           {
-            time: '2017/01/11',
-            founds: '2000ETH',
-            order: '123'
+            name: '月数据',
+            id: 2
+          }
+        ],
+        balanceTitle: '',
+        balanceList: [
+          {
+            title: 'BTC总提币：',
+            value: '2'
+          },
+          {
+            title: 'ETH总提币：',
+            value: '1'
           }
         ]
       }
     },
+    mounted() {
+      this.formatTime(this.rechargeTime, 'd')
+      // startTime=1&stopTime=2&shopId=3&fromAddress=4&toAddress=5&hash=6&oprType=7&transactionId=8&transactionStatus=9&shopWithdraw=10&pageNum=11&pageSize=12&orderBy=13
+      this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=withdraw&shopId=${this.companyName}`)
+    },
     methods: {
-      importFun() {
-        console.log(this.rechargeTime)
+      changeFun(v) {
+        this.companyName = v
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=withdraw&shopId=${this.companyName}`)
+      },
+      changeType(t) {
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${t}&oprType=withdraw`)
+      },
+      getTableData(payload) {
+        this.$store.dispatch('getStatisticsData', payload).then().catch()
+      },
+      exportTable() {
+        this.$store.dispatch('getSign').then((s) => {
+          window.open(`${window.urlData.url}/dashbord/transaction/count/export?sign=${s}&startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=withdraw&shopId=${this.companyName}`)
+        }).catch()
       },
       handleCurrentChange(t) {
-        console.log(t)
+        this.pageNum = t
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=withdraw&shopId=${this.companyName}`)
+      },
+      resetSearch() {
+        this.formatTime(false);
+        [this.rechargeTime, this.rangeWeek, this.rangeMonth, this.companyName] = ['', [], [], '']
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=withdraw&shopId=${this.companyName}`)
+      },
+      formatTime(t, d) {
+        t[0] ? this.startTime = formatTime(t[0], false, d) : this.startTime = '2000/06/07 00:00:00'
+        t[1] ? this.stopTime = formatTime(t[1], true, d) : this.stopTime = formatTime(new Date(), false, 'd')
       }
     }
   }
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-  .withdraw-data {
+  .recharge-data {
     padding: 20px;
   }
 </style>

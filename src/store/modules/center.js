@@ -1,4 +1,4 @@
-import { adminList, createAdmin, deleteAdmin, modifyAdmin, managePermission } from '@/api/admin'
+import { adminList, createAdmin, deleteAdmin, modifyAdmin, managePermission, fee, totalBalance } from '@/api/admin'
 import { companyList, createCompany, rwAjax, addressAjax, addressInfo, modifyCompany, withdrawAjax, importSign, statisticsData } from '@/api/Home'
 const center = {
   state: {
@@ -7,7 +7,8 @@ const center = {
     rwList: {},
     addressList: {},
     addressData: {},
-    statisticsTable: {}
+    statisticsTable: {},
+    copyList: {}
   },
 
   mutations: {
@@ -16,6 +17,9 @@ const center = {
     },
     SET_COMPANY_LIST: (state, payload) => {
       state.companyList = payload
+    },
+    SET_COPY_LIST: (state, payload) => {
+      state.copyList = payload
     },
     SET_RECHARGE_LIST: (state, payload) => {
       state.rwList = payload
@@ -93,7 +97,7 @@ const center = {
       return new Promise((resolve, reject) => {
         companyList(payload).then(res => {
           commit('SET_COMPANY_LIST', res.data)
-          resolve()
+          resolve(res.data)
         }).catch(error => {
           reject(error)
         })
@@ -156,14 +160,32 @@ const center = {
     },
     getStatisticsData({ commit, state }, payload) {
       return new Promise((resolve, reject) => {
-        rwAjax(payload).then(res => {
-          statisticsData('SET_STATISTICS_DATA', res.data)
+        statisticsData(payload).then(res => {
+          commit('SET_STATISTICS_DATA', res.data)
           resolve()
         }).catch(error => {
           reject(error)
         })
       })
     },
+    getFeeData({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        fee(payload).then(res => {
+          resolve(res.data)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    getTotalData({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        totalBalance(payload).then(res => {
+          resolve(res.data)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    }
   }
 }
 

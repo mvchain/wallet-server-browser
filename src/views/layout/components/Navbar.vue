@@ -2,17 +2,13 @@
   <el-menu class="navbar" mode="horizontal">
     <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
     <breadcrumb></breadcrumb>
-    <div class="balance">
-      <span @click="showBalance">待提币总金额：20000.123454667ETH</span>
-      <span @click="targetEth">钱包余额：20000.123454667ETH</span>
-    </div>
     <el-dropdown class="avatar-container" trigger="click">
       <div class="avatar-wrapper">
         <span>{{avatar}}</span>
         <i class="el-icon-caret-bottom"></i>
       </div>
       <el-dropdown-menu class="user-dropdown" slot="dropdown">
-        <el-dropdown-item>
+        <el-dropdown-item v-if="permission == 0">
           <span @click="dialogFormVisible = true">手续费设置</span>
         </el-dropdown-item>
         <el-dropdown-item divided>
@@ -21,13 +17,29 @@
       </el-dropdown-menu>
     </el-dropdown>
     <el-dialog  width="600px"  title="转账手续费设置" :visible.sync="dialogFormVisible">
-      <el-slider
-        v-model="newFee.fee"
-        :min="0.0000210"
-        :max="0.002100"
-        :step="0.0000021"
-      >
-      </el-slider>
+      <div>
+        <span>BTC手续费：</span>
+        <span>{{fee.eth}}</span>
+        <el-slider
+          v-model="fee.eth"
+          :min="0.0000210"
+          :max="0.002100"
+          :step="0.0000021"
+        >
+        </el-slider>
+      </div>
+      <div>
+        <span>ETH手续费：</span>
+        <span>{{fee.eth}}</span>
+        <el-slider
+          v-model="fee.eth"
+          :min="0.0000210"
+          :max="0.002100"
+          :step="0.0000021"
+        >
+        </el-slider>
+      </div>
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="setFee">确 定</el-button>
@@ -46,6 +58,9 @@ export default {
     Breadcrumb,
     Hamburger
   },
+  props: {
+    fee: Object
+  },
   computed: {
     ...mapGetters([
       'sidebar'
@@ -54,21 +69,18 @@ export default {
   data() {
     return {
       avatar: '',
-      newFee: {
-        fee: 0.00021
-      },
-      dialogFormVisible: false
-    }
-  },
-  watch: {
-    'newFee.fee': function(v) {
-      this.newFee.gasPrice = parseInt(v / this.feeData.gasLimit * 1000000000000000000)
+      dialogFormVisible: false,
+      permission: ''
     }
   },
   mounted() {
     const un = window.localStorage.getItem('user')
+    const pe = window.localStorage.getItem('permission')
     if (un) {
       this.avatar = JSON.parse(un).username
+    }
+    if (pe) {
+      this.permission = JSON.parse(pe).adminType
     }
   },
   methods: {
@@ -80,16 +92,8 @@ export default {
         location.reload() // 为了重新实例化vue-router对象 避免bug
       })
     },
-    showBalance() {
-      this.$message({
-        dangerouslyUseHTMLString: true,
-        message: '<p>待提币金额：123123.3123ETH</p><p style="margin:10px 0">提币失败金额：123123.321231ETH</p><p>待提币总金额：123123123.32123ETH</p>'
-      })
-    },
-    targetEth() {
-      window.open('https://www.baidu.com')
-    },
     setFee() {
+      console.log(this.fee)
       this.dialogFormVisible = false
     }
   }

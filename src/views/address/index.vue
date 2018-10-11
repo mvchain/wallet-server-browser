@@ -11,7 +11,7 @@
       <el-col :span="3">
         <el-select @change="changeFun" v-model="companyName" placeholder="请选择">
           <el-option
-            v-for="item in companyList.list"
+            v-for="item in copyList.list"
             :key="item.shopId"
             :label="item.shopName"
             :value="item.shopId">
@@ -46,7 +46,6 @@
         </el-table-column>
         <el-table-column
           prop="address"
-          width="550"
           label="地址">
         </el-table-column>
         <el-table-column
@@ -99,15 +98,12 @@
     mounted() {
       // id=0&tokenType=1&address=2&createdAt=3&updatedAt=4&isUsed=5&balance=6&userId=7&shopId=8
       this.getTableData('pageNum=1&pageSize=20&orderBy=created_at')
-      this.$store.dispatch('getCompanyList', 'pageNum=1&pageSize=1000&orderBy=status desc,created_at desc').then(() => {
-        this.companyList.list.unshift({ shopName: '全部商家', shopId: '' })
-      }).catch()
       this.$store.dispatch('getAddressData').then().catch()
     },
     computed: {
       ...mapGetters({
         addressList: 'addressList',
-        companyList: 'companyList',
+        copyList: 'copyList',
         addressData: 'addressData'
       })
     },

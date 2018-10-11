@@ -43,7 +43,7 @@ export const constantRouterMap = [
         path: 'setAddr',
         name: 'setAddr',
         component: _import('address/index'),
-        meta: { title: '地址管理', icon: 'teacher' }
+        meta: { title: '地址管理', icon: 'teacher', adminType: '0/1' }
       }
     ]
   },
@@ -58,13 +58,13 @@ export const constantRouterMap = [
         path: 'companyManage',
         name: 'companyManage',
         component: _import('company/companyManage'),
-        meta: { title: '商家管理', icon: 'wallet' }
+        meta: { title: '商家管理', icon: 'wallet', adminType: '0/1' }
       },
       {
         path: 'companyWithdraw',
         name: 'companyWithdraw',
         component: _import('company/companyWithdraw'),
-        meta: { title: '商家提现', icon: 'wallet' }
+        meta: { title: '商家提现', icon: 'wallet', adminType: '0/1' }
       }
     ]
   },
@@ -74,18 +74,16 @@ export const constantRouterMap = [
     redirect: '/AdministratorSettings/Setting',
 
     name: 'AdministratorSettings',
-    meta: { title: '设置', icon: 'teacher', adminType: '0/2' },
+    meta: { title: '设置', icon: 'teacher', adminType: '0/1/2/3' },
     children: [
       {
         path: 'Setting',
         name: 'Setting',
         component: _import('AdministratorSettings/index'),
-        meta: { title: '管理员设置', icon: 'teacher' }
+        meta: { title: '管理员设置', icon: 'teacher', adminType: '0/1/2/3' }
       }
     ]
   },
-
-
   {
     path: '/rechargeWithdraw',
     component: Layout,
@@ -97,13 +95,13 @@ export const constantRouterMap = [
         path: 'recharge',
         name: 'recharge',
         component: _import('rechargeWithdraw/recharge'),
-        meta: { title: '充值记录', icon: 'dragstore' }
+        meta: { title: '充值记录', icon: 'dragstore', adminType: '0/1/2/3' }
       },
       {
         path: 'withdraw',
         name: 'withdraw',
         component: _import('rechargeWithdraw/withdraw'),
-        meta: { title: '提币记录', icon: 'dragstore' }
+        meta: { title: '提币记录', icon: 'dragstore', adminType: '0/1/2/3' }
       }
     ]
   },
@@ -118,13 +116,19 @@ export const constantRouterMap = [
         path: 'rechargeData',
         name: 'rechargeData',
         component: _import('dataStatistics/rechargeData'),
-        meta: { title: '充值数据', icon: 'list' }
+        meta: { title: '充值数据', icon: 'list', adminType: '0/1/2/3' }
       },
       {
         path: 'withdrawData',
         name: 'withdrawData',
         component: _import('dataStatistics/withdrawData'),
-        meta: { title: '提币数据', icon: 'list' }
+        meta: { title: '提币数据', icon: 'list', adminType: '0/1/2/3' }
+      },
+      {
+        path: 'allData',
+        name: 'allData',
+        component: _import('dataStatistics/allData'),
+        meta: { title: '汇总数据', icon: 'list', adminType: '0/1' }
       }
     ]
   },
@@ -133,17 +137,16 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/apply/applyWithdraw',
     name: 'apply',
-    meta: { title: '申请', icon: 'form', adminType: '2/3' },
+    meta: { title: '商家提币', icon: 'form', adminType: '2/3' },
     children: [
       {
         path: 'applyWithdraw',
         name: 'applyWithdraw',
         component: _import('apply/index'),
-        meta: { title: '申请提现', icon: 'form' }
+        meta: { title: '商家提币记录', icon: 'form' }
       }
     ]
   },
-
 
   { path: '*', redirect: '/404', hidden: true }
 ]

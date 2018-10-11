@@ -1,6 +1,6 @@
 <template>
   <div class="admin">
-    <div>
+    <div v-if="permission === 0 || permission === 2">
       <el-button type="success" @click="createManageFun">新建管理员</el-button>
     </div>
     <div class="admin-table">
@@ -22,8 +22,8 @@
           with="600"
           label="操作">
           <template slot-scope="scope">
-            <el-button plain type="primary" @click="editManage(scope.row)" size="small">编辑</el-button>
-            <el-button plain type="danger" size="small" @click="deleteManage(scope.row.id)">删除</el-button>
+            <el-button :disabled="permission === 1 || permission === 3" plain type="primary" @click="editManage(scope.row)" size="small">编辑</el-button>
+            <el-button :disabled="permission === 1 || permission === 3" plain type="danger" size="small" @click="deleteManage(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -48,7 +48,10 @@
           <el-input type="password" v-model="manageForm.password"></el-input>
         </el-form-item>
         <el-form-item v-if="permission === 2" label="订单审核：" prop="delivery" :label-width="formLabelWidth">
-          <el-switch active-value="1" inactive-value="0" v-model="manageForm.permissionReview"></el-switch>
+          <el-switch active-value="1" inactive-value="0" v-model="manageForm.permissionAuditing"></el-switch>
+        </el-form-item>
+        <el-form-item v-if="permission === 0" label="商家提现：" prop="delivery" :label-width="formLabelWidth">
+          <el-switch active-value="1" inactive-value="0" v-model="manageForm.permissionShopWithdraw"></el-switch>
         </el-form-item>
         <el-form-item v-if="permission === 0" label="汇总操作：" prop="delivery" :label-width="formLabelWidth">
           <el-switch active-value="1" inactive-value="0" v-model="manageForm.permissionCollect"></el-switch>
@@ -88,7 +91,8 @@
           password: '',
           permissionCollect: '0',
           permissionWithdraw: '0',
-          permissionReview: '0',
+          permissionAuditing: '0',
+          permissionShopWithdraw: '0',
           userId: '',
           username: ''
         },
@@ -222,6 +226,12 @@
               break
             case 3:
               f.permissionWithdraw = '1'
+              break
+            case 4:
+              f.permissionAuditing = '1'
+              break
+            case 5:
+              f.permissionShopWithdraw = '1'
               break
           }
         })

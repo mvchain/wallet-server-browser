@@ -2,7 +2,7 @@
   <div class="app-wrapper" :class="{hideSidebar:!sidebar.opened}">
     <sidebar class="sidebar-container"></sidebar>
     <div class="main-container">
-      <navbar></navbar>
+      <navbar :fee="newFee"></navbar>
       <app-main></app-main>
     </div>
   </div>
@@ -13,6 +13,14 @@ import { Navbar, Sidebar, AppMain } from '@/views/layout/components'
 
 export default {
   name: 'layout',
+  data() {
+    return {
+      newFee: {
+        eth: 0,
+        btc: 0
+      }
+    }
+  },
   components: {
     Navbar,
     Sidebar,
@@ -22,6 +30,11 @@ export default {
     sidebar() {
       return this.$store.state.app.sidebar
     }
+  },
+  mounted() {
+    this.$store.dispatch('getFeeData', 'eth').then((res) => {
+      this.newFee.eth = res
+    }).catch()
   }
 }
 </script>

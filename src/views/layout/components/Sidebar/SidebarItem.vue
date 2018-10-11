@@ -23,7 +23,7 @@
                         :key="child.path"></sidebar-item>
 
           <router-link v-else :to="item.path+'/'+child.path" :key="child.name">
-            <el-menu-item :index="item.path+'/'+child.path">
+            <el-menu-item :index="item.path+'/'+child.path" v-if="child.meta.adminType.includes(adminType)">
               <svg-icon v-if="child.meta&&child.meta.icon" :icon-class="child.meta.icon"></svg-icon>
               <span v-if="child.meta&&child.meta.title">{{child.meta.title}}</span>
             </el-menu-item>
@@ -50,7 +50,7 @@
     },
     mounted() {
       const aa = JSON.parse(window.localStorage.getItem('permission'))
-      this.adminType = aa.adminType + ''
+      this.adminType = aa.adminType.toString()
     }
   }
 </script>

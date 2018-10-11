@@ -33,3 +33,16 @@ export function managePermission(data) {
   })
 }
 
+export function fee(data) {
+  return request({
+    url: '/dashbord/fee?tokenType=' + data,
+    method: 'get'
+  })
+}
+
+export function totalBalance(data) {
+  return request({
+    url: '/dashbord/total?' + data,
+    method: 'get'
+  })
+}
