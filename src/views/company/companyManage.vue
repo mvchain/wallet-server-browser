@@ -114,7 +114,8 @@
     name: 'companyManage',
     props: {
       permission: Number,
-      manage: Object
+      manage: Object,
+      permissionStr: String
     },
     data() {
       return {
@@ -180,10 +181,12 @@
             this.editManage(v[0])
             break
           case 2:
+            if (!this.permissionStr.includes('3')) return
             this.tokenName = 'ETH'
             this.withDrawManage(v[0])
             break
           case 3:
+            if (!this.permissionStr.includes('3')) return
             this.tokenName = 'BTC'
             this.withDrawManage(v[0])
             break

@@ -11,6 +11,18 @@
         <el-dropdown-item v-if="permission == 0">
           <span @click="dialogFormVisible = true">手续费设置</span>
         </el-dropdown-item>
+        <el-dropdown-item v-if="permission == 2 || permission == 3">
+          <span >BTC待提金额：20000</span>
+        </el-dropdown-item>
+        <el-dropdown-item v-if="permission == 2 || permission == 3">
+          <span @click="dialogFormVisible = true">BTC余额：20000</span>
+        </el-dropdown-item>
+        <el-dropdown-item v-if="permission == 2 || permission == 3">
+          <span >ETH待提金额：20000</span>
+        </el-dropdown-item>
+        <el-dropdown-item v-if="permission == 2 || permission == 3">
+          <span @click="dialogFormVisible = true">ETH待提金额：20000</span>
+        </el-dropdown-item>
         <el-dropdown-item divided>
           <span @click="logout" style="display:block;">退出</span>
         </el-dropdown-item>

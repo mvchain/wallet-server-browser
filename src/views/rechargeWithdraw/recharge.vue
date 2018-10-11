@@ -7,6 +7,7 @@
             class="upload-demo"
             :action="action"
             :headers="uploadHead"
+            :disabled="!this.permissionStr.includes('2')"
             :on-success="successFun"
             :on-error="errorFun"
             :show-file-list="false"
@@ -102,7 +103,8 @@
     name: 'recharge',
     props: {
       permission: Number,
-      manage: Object
+      manage: Object,
+      permissionStr: String
     },
     data() {
       return {
@@ -200,6 +202,7 @@
         this.$store.dispatch('getRWList', payload).then().catch()
       },
       exportFun() {
+        if (!this.permissionStr.includes('2')) return
         this.$store.dispatch('getSign').then((s) => {
           window.open(`${window.urlData.url}/dashbord/transaction/export?sign=${s}&startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0`)
         }).catch()

@@ -102,6 +102,12 @@ export const constantRouterMap = [
         name: 'withdraw',
         component: _import('rechargeWithdraw/withdraw'),
         meta: { title: '提币记录', icon: 'dragstore', adminType: '0/1/2/3' }
+      },
+      {
+        path: 'allData',
+        name: 'allData',
+        component: _import('dataStatistics/allData'),
+        meta: { title: '汇总数据', icon: 'dragstore', adminType: '0/1' }
       }
     ]
   },
@@ -123,12 +129,6 @@ export const constantRouterMap = [
         name: 'withdrawData',
         component: _import('dataStatistics/withdrawData'),
         meta: { title: '提币数据', icon: 'list', adminType: '0/1/2/3' }
-      },
-      {
-        path: 'allData',
-        name: 'allData',
-        component: _import('dataStatistics/allData'),
-        meta: { title: '汇总数据', icon: 'list', adminType: '0/1' }
       }
     ]
   },

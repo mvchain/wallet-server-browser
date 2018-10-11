@@ -23,7 +23,7 @@
           label="操作">
           <template slot-scope="scope">
             <el-button :disabled="permission === 1 || permission === 3" plain type="primary" @click="editManage(scope.row)" size="small">编辑</el-button>
-            <el-button :disabled="permission === 1 || permission === 3" plain type="danger" size="small" @click="deleteManage(scope.row.id)">删除</el-button>
+            <el-button v-if="scope.row.adminType !== 2 && scope.row.adminType !== 0" :disabled="permission === 1 || permission === 3" plain type="danger" size="small" @click="deleteManage(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

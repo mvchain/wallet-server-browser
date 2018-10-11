@@ -46,3 +46,15 @@ export function totalBalance(data) {
     method: 'get'
   })
 }
+export function putStatus(data) {
+  return request({
+    url: `/dashbord/transaction/${data.id}/${data.status}`,
+    method: 'put'
+  })
+}
+export function multipleAgree(data) {
+  return request({
+    url: `/dashbord/agree?ids=${data}`,
+    method: 'put'
+  })
+}

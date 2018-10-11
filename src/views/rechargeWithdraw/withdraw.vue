@@ -6,6 +6,7 @@
           <el-upload
             class="upload-demo"
             :action="action"
+            :disabled="!this.permissionStr.includes('2')"
             :headers="uploadHead"
             :on-success="successFun"
             :on-error="errorFun"
@@ -59,9 +60,9 @@
         </el-input>
       </el-col>
     </el-row>
-    <el-row v-else :gutter="20">
+    <el-row v-if="permission === 2 || permission === 3" :gutter="20">
       <el-col :span="5">
-        <el-button>同意已勾选</el-button>
+        <button class="agreeBtn" @click="agreeHandler" v-if="permissionStr.includes('4')">同意已勾选</button>
       </el-col>
       <el-col :span="3">
         <el-select @change="statusChange" v-model="companyStatus" placeholder="请选择">
@@ -97,10 +98,12 @@
     <div style="margin-top:20px;">
       <el-table
         :data="rwList.list"
+        @selection-change="handleSelectionChange"
         border
         style="width: 100%">
         <el-table-column
           v-if="permission === 2 || permission === 3"
+          :selectable="isSelectHandler"
           type="selection"
           width="55">
         </el-table-column>
@@ -134,8 +137,17 @@
         <el-table-column
           prop="statusStr"
           label="状态">
-          <template slot-scope="scope">
-            {{scope.row.transactionStatus | statusFliter}}
+          <template slot-scope="scope" >
+            <el-dropdown v-if="scope.row.transactionStatus === 1 && permission === 2 || permission === 3" @command="handleCommand" :disabled="true">
+              <span class="el-dropdown-link">
+                待审核<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :disabled="!permissionStr.includes('4')" :command="{id: scope.row.id, status: 2}">同意</el-dropdown-item>
+                <el-dropdown-item :disabled="!permissionStr.includes('4')" :command="{id: scope.row.id, status: 3}">拒绝</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <span :title="scope.row.errorMsg" v-else>{{scope.row.transactionStatus | statusFliter}}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -165,7 +177,8 @@
     },
     props: {
       permission: Number,
-      manage: Object
+      manage: Object,
+      permissionStr: String
     },
     mounted() {
       // startTime=1&stopTime=2&shopId=3&fromAddress=4&toAddress=5&hash=6&oprType=7&transactionId=8&transactionStatus=9&shopWithdraw=10&pageNum=11&pageSize=12&orderBy=13
@@ -183,6 +196,7 @@
         pageNum: '1',
         durationTime: 3,
         fromAddress: '',
+        multipleSelection: [],
         dateType: 0,
         companyName: '',
         companyStatus: '',
@@ -221,6 +235,34 @@
       }
     },
     methods: {
+      isSelectHandler(v) {
+        return v.transactionStatus === 1 && this.permissionStr.includes('4')
+      },
+      agreeHandler() {
+        // putMultipleAgree
+        if (this.multipleSelection.length === 0) return
+        const ids = []
+        this.multipleSelection.map((v) => {
+          ids.push(v.id)
+        })
+        this.$confirm('是否批量同意提现？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$store.dispatch('putMultipleAgree', ids.toString()).then(() => {
+            this.getTableData('pageNum=1&pageSize=20&oprType=withdraw&shopWithdraw=0&orderBy=created_at desc')
+          }).catch()
+        }).catch(() => {})
+      },
+      handleSelectionChange(v) {
+        this.multipleSelection = v
+      },
+      handleCommand(v) {
+        this.$store.dispatch('putTransactionStatus', v).then(() => {
+          this.getTableData('pageNum=1&pageSize=20&oprType=withdraw&shopWithdraw=0&orderBy=created_at desc')
+        }).catch()
+      },
       searchHandler() {
         this.searchText = this.searchText.replace(/\s/g, '')
         if (this.searchText.length !== 42 && this.searchText.length !== 34) {
@@ -260,6 +302,7 @@
         this.$store.dispatch('getRWList', payload).then().catch()
       },
       exportFun() {
+        if (!this.permissionStr.includes('2')) return
         this.$store.dispatch('getSign').then((s) => {
           window.open(`${window.urlData.url}/dashbord/sign/export?sign=${s}&oprType=withdraw&shopWithdraw=0`)
         }).catch()
@@ -299,5 +342,28 @@
 <style  rel="stylesheet/scss" lang="scss" scoped>
   .company-withdraw{
     padding:20px;
+    .agreeBtn:hover{
+      color: #409EFF;
+      border-color: #c6e2ff;
+      background-color: #ecf5ff;
+    }
+    .agreeBtn{
+      display: inline-block;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+      background: #fff;
+      border: 1px solid #dcdfe6;
+      color: #606266;
+      text-align: center;
+      box-sizing: border-box;
+      outline: 0;
+      margin: 0;
+      transition: .1s;
+      font-weight: 500;
+      padding: 12px 20px;
+      font-size: 14px;
+      border-radius: 4px;
+    }
   }
 </style>

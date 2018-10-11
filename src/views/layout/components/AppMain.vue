@@ -2,7 +2,7 @@
   <section class="app-main">
     <transition name="fade" mode="out-in">
       <!-- <router-view :key="key"></router-view> -->
-      <router-view :permission="permission" :manage="manage" ></router-view>
+      <router-view :permission="permission" :manage="manage" :permissionStr="permissionStr"></router-view>
     </transition>
   </section>
 </template>
@@ -13,7 +13,8 @@ export default {
   data() {
     return {
       permission: 0,
-      manage: {}
+      manage: {},
+      permissionStr: ''
     }
   },
   mounted() {
@@ -21,11 +22,18 @@ export default {
     const us = window.localStorage.getItem('user')
     if (un) {
       this.permission = Number(JSON.parse(un).adminType)
+      const arr = []
+      if (un) {
+        JSON.parse(un).permissionList.map((v) => {
+          arr.push(v.permissionId)
+        })
+        this.permissionStr = arr.toString()
+      }
     }
     if (us) {
       this.manage = JSON.parse(us)
     }
-    this.$store.dispatch('getCompanyList', 'pageNum=1&pageSize=1000&orderBy=status desc,created_at desc').then((res) => {
+    this.$store.dispatch('getCopyList', 'pageNum=1&pageSize=1000&orderBy=status desc,created_at desc').then((res) => {
       const a = {}
       Object.assign(a, res)
       a.list.unshift({ shopName: '全部商家', shopId: '' })

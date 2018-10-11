@@ -1,4 +1,4 @@
-import { adminList, createAdmin, deleteAdmin, modifyAdmin, managePermission, fee, totalBalance } from '@/api/admin'
+import { adminList, createAdmin, deleteAdmin, modifyAdmin, managePermission, fee, totalBalance, putStatus, multipleAgree } from '@/api/admin'
 import { companyList, createCompany, rwAjax, addressAjax, addressInfo, modifyCompany, withdrawAjax, importSign, statisticsData } from '@/api/Home'
 const center = {
   state: {
@@ -103,6 +103,15 @@ const center = {
         })
       })
     },
+    getCopyList({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        companyList(payload).then(res => {
+          resolve(res.data)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
     deleteAdminList({ commit, state }, payload) {
       return new Promise((resolve, reject) => {
         deleteAdmin(payload).then(res => {
@@ -181,6 +190,24 @@ const center = {
       return new Promise((resolve, reject) => {
         totalBalance(payload).then(res => {
           resolve(res.data)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    putTransactionStatus({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        putStatus(payload).then(res => {
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    putMultipleAgree({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        multipleAgree(payload).then(res => {
+          resolve()
         }).catch(error => {
           reject(error)
         })
