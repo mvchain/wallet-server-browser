@@ -1,43 +1,17 @@
 <template>
   <div class="recharge-data">
     <el-row :gutter="20">
+      <el-col :span="16" style="line-height: 40px">
+        <span v-for="(v, k) in allBalance[0]"> {{k}}总汇金额：{{v}}</span>
+      </el-col>
+
       <el-col :span="8">
-        <el-select @change="changeFun" v-model="balanceTitle" placeholder="请选择">
-          <el-option
-            v-for="item in balanceList"
-            :key="item.value"
-            :label="item.title"
-            :value="item.value">
-          </el-option>
-        </el-select>
-      </el-col>
-      <el-col :span="3">
-        <el-select @change="changeFun" v-model="companyName" placeholder="请选择">
-          <el-option
-            v-for="item in copyList.list"
-            :key="item.shopId"
-            :label="item.shopName"
-            :value="item.shopId">
-          </el-option>
-        </el-select>
-      </el-col>
-      <el-col :span="3">
-        <el-select v-model="dateType" @change="changeType" placeholder="请选择">
-          <el-option
-            v-for="(v, k) in timeChange"
-            :key="k"
-            :label="v.name"
-            :value="v.id">
-          </el-option>
-        </el-select>
-      </el-col>
-      <el-col :span="10">
         <template>
           <el-date-picker
             v-model="rechargeTime"
-            v-show="dateType === 0"
             type="daterange"
             align="right"
+            @change="timeChange"
             :clearable="false"
             :default-time="['00:00:00', '23:59:59']"
             unlink-panels
@@ -47,62 +21,37 @@
           >
           </el-date-picker>
         </template>
-        <el-date-picker
-          v-model="rangeWeek[0]"
-          v-show="dateType === 1"
-          :clearable="false"
-          type="week"
-          :default-time="['00:00:00', '23:59:59']"
-          format="yyyy 第 WW 周"
-        >
-        </el-date-picker>
-        <el-date-picker
-          v-model="rangeWeek[1]"
-          v-show="dateType === 1"
-          :clearable="false"
-          type="week"
-          :default-time="['00:00:00', '23:59:59']"
-          format="yyyy 第 WW 周"
-        >
-        </el-date-picker>
-        <template>
-          <el-date-picker
-            v-model="rangeMonth[0]"
-            v-show="dateType === 2"
-            :clearable="false"
-            :default-time="['00:00:00', '23:59:59']"
-            type="month"
-          >
-          </el-date-picker>
-          <el-date-picker
-            v-model="rangeMonth[1]"
-            v-show="dateType === 2"
-            :clearable="false"
-            :default-time="['00:00:00', '23:59:59']"
-            type="month"
-          >
-          </el-date-picker>
-        </template>
-        <el-button @click="resetSearch">重置</el-button>
         <el-button @click="exportTable">导出表格</el-button>
       </el-col>
     </el-row>
     <div style="margin-top:20px;">
       <el-table
-        :data="statisticsTable.list"
+        :data="allStatistics.list"
         border
         style="width: 100%">
         <el-table-column
-          prop="dateStr"
+          prop="createdAtStr"
           label="日期">
         </el-table-column>
         <el-table-column
           prop="value"
-          label="充值金额">
+          label="ETH汇总金额">
         </el-table-column>
         <el-table-column
-          prop="orderCount"
-          label="订单数">
+          prop="valueComplete"
+          label="ETH实际汇总金额">
+        </el-table-column>
+        <el-table-column
+          prop="feeComplete"
+          label="实际手续费">
+        </el-table-column>
+        <el-table-column
+          prop="total"
+          label="汇总账户数量">
+        </el-table-column>
+        <el-table-column
+          prop="totalComplete"
+          label="实际汇总账户数量">
         </el-table-column>
       </el-table>
       <div style="margin-top:30px; text-align:center;">
@@ -110,7 +59,7 @@
           @current-change="handleCurrentChange"
           :page-size="20"
           layout="prev, pager, next"
-          :total="statisticsTable.total">
+          :total="allStatistics.total">
         </el-pagination>
       </div>
     </div>
@@ -129,90 +78,42 @@
     },
     computed: {
       ...mapGetters({
-        statisticsTable: 'statisticsTable',
-        copyList: 'copyList'
+        allStatistics: 'allStatistics',
+        allBalance: 'allBalance'
       })
-    },
-    watch: {
-      'rechargeTime': function(v, o) {
-        this.formatTime(this.rechargeTime, 'd')
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=recharge&shopId=${this.companyName}`)
-      },
-      'rangeWeek': function() {
-        this.formatTime(this.rangeWeek, 'w')
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=recharge&shopId=${this.companyName}`)
-      },
-      'rangeMonth': function() {
-        this.formatTime(this.rangeMonth, 'm')
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=recharge&shopId=${this.companyName}`)
-      }
     },
     data() {
       return {
         rechargeTime: [],
-        rangeWeek: [],
-        rangeMonth: [],
-        dateType: 0,
         startTime: '',
         stopTime: '',
-        companyName: '',
-        timeChange: [
-          {
-            name: '日数据',
-            id: 0
-          },
-          {
-            name: '周数据',
-            id: 1
-          },
-          {
-            name: '月数据',
-            id: 2
-          }
-        ],
-        balanceTitle: '',
-        balanceList: [
-          {
-            title: 'BTC总提币：',
-            value: '2'
-          },
-          {
-            title: 'ETH总提币：',
-            value: '1'
-          }
-        ]
+        pageNum: 1
       }
     },
     mounted() {
-      this.formatTime(this.rechargeTime, 'd')
-      // startTime=1&stopTime=2&shopId=3&fromAddress=4&toAddress=5&hash=6&oprType=7&transactionId=8&transactionStatus=9&shopWithdraw=10&pageNum=11&pageSize=12&orderBy=13
-      this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=recharge&shopId=${this.companyName}`)
+      this.formatTime(this.rechargeTime)
+      this.$store.dispatch('getCollect')
+      // /dashbord/collect?pageNum=1&pageSize=2&orderBy=3&startTime=4&stopTime=5
+      this.getTableData(`pageNum=${this.pageNum}&pageSize=2&orderBy=created_at desc&startTime=${this.startTime}&stopTime=${this.stopTime}`)
     },
     methods: {
-      changeFun(v) {
-        this.companyName = v
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=recharge&shopId=${this.companyName}`)
-      },
-      changeType(t) {
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${t}&oprType=recharge`)
+      timeChange() {
+        this.formatTime(this.rechargeTime)
+        this.getTableData(`pageNum=${this.pageNum}&pageSize=2&orderBy=created_at desc&startTime=${this.startTime}&stopTime=${this.stopTime}`)
       },
       getTableData(payload) {
-        this.$store.dispatch('getStatisticsData', payload).then().catch()
+        this.$store.dispatch('getSatisticsCollect', payload).then().catch()
       },
       exportTable() {
         this.$store.dispatch('getSign').then((s) => {
-          window.open(`${window.urlData.url}/dashbord/transaction/count/export?sign=${s}&startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=recharge&shopId=${this.companyName}`)
+          window.open(`${window.urlData.url}/dashbord/collect/opr/export?sign=${s}&startTime=${this.startTime}&stopTime=${this.stopTime}`)
         }).catch()
       },
       handleCurrentChange(t) {
         this.pageNum = t
         this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=recharge&shopId=${this.companyName}`)
       },
-      resetSearch() {
-        this.formatTime(false);
-        [this.rechargeTime, this.rangeWeek, this.rangeMonth, this.companyName] = ['', [], [], '']
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=recharge&shopId=${this.companyName}`)
-      },
+
       formatTime(t, d) {
         t[0] ? this.startTime = formatTime(t[0], false, d) : this.startTime = '2000/06/07 00:00:00'
         t[1] ? this.stopTime = formatTime(t[1], true, d) : this.stopTime = formatTime(new Date(), false, 'd')

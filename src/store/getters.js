@@ -7,6 +7,8 @@ const getters = {
   rwList: state => state.center.rwList,
   addressList: state => state.center.addressList,
   addressData: state => state.center.addressData,
-  statisticsTable: state => state.center.statisticsTable
+  statisticsTable: state => state.center.statisticsTable,
+  allBalance: state => state.center.allBalance,
+  allStatistics: state => state.center.allStatistics
 }
 export default getters

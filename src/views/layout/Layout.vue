@@ -2,7 +2,7 @@
   <div class="app-wrapper" :class="{hideSidebar:!sidebar.opened}">
     <sidebar class="sidebar-container"></sidebar>
     <div class="main-container">
-      <navbar :fee="newFee"></navbar>
+      <navbar :fee="newFee" :reserved="reserve"></navbar>
       <app-main></app-main>
     </div>
   </div>
@@ -16,8 +16,11 @@ export default {
   data() {
     return {
       newFee: {
-        eth: 0,
-        btc: 0
+        ethGas: 0,
+        btcGas: 0
+      },
+      reserve: {
+        eth: 0
       }
     }
   },
@@ -32,8 +35,12 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch('getFeeData', 'eth').then((res) => {
-      this.newFee.eth = res
+    this.$store.dispatch('getFeeData').then((res) => {
+      this.newFee.ethGas = res[0].gas
+      this.newFee.btcGas = res[1].gas
+    }).catch()
+    this.$store.dispatch('getReserved').then((res) => {
+      this.reserve.eth = res
     }).catch()
   }
 }

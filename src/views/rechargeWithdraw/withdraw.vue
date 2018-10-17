@@ -147,6 +147,14 @@
                 <el-dropdown-item :disabled="!permissionStr.includes('4')" :command="{id: scope.row.id, status: 3}">拒绝</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
+            <el-dropdown v-else-if="scope.row.transactionStatus === 6 && permission === 2 || permission === 3" @command="handleCommand" :disabled="true">
+              <span class="el-dropdown-link" :title="scope.row.errorData">
+                失败:{{scope.row.errorMsg}}<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :disabled="!permissionStr.includes('4')" :command="{id: scope.row.id, status: 3}">拒绝</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
             <span :title="scope.row.errorMsg" v-else>{{scope.row.transactionStatus | statusFliter}}</span>
           </template>
         </el-table-column>
@@ -210,7 +218,7 @@
             id: '1'
           },
           {
-            name: '待签名',
+            name: '待提币',
             id: '2'
           },
           {

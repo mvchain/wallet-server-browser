@@ -11,6 +11,9 @@
         <el-dropdown-item v-if="permission == 0">
           <span @click="dialogFormVisible = true">手续费设置</span>
         </el-dropdown-item>
+        <el-dropdown-item v-if="permission == 0">
+          <span @click="dialogBalance = true">汇总保留金额</span>
+        </el-dropdown-item>
         <el-dropdown-item v-if="permission == 2 || permission == 3">
           <span >BTC待提金额：20000</span>
         </el-dropdown-item>
@@ -31,20 +34,20 @@
     <el-dialog  width="600px"  title="转账手续费设置" :visible.sync="dialogFormVisible">
       <div>
         <span>BTC手续费：</span>
-        <span>{{fee.eth}}</span>
+        <span>{{fee.btcGas}}</span>
         <el-slider
-          v-model="fee.eth"
-          :min="0.0000210"
-          :max="0.002100"
-          :step="0.0000021"
+          v-model="fee.btcGas"
+          :min="0.00001"
+          :max="0.0001"
+          :step="0.000001"
         >
         </el-slider>
       </div>
       <div>
         <span>ETH手续费：</span>
-        <span>{{fee.eth}}</span>
+        <span>{{fee.ethGas}}</span>
         <el-slider
-          v-model="fee.eth"
+          v-model="fee.ethGas"
           :min="0.0000210"
           :max="0.002100"
           :step="0.0000021"
@@ -55,6 +58,24 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="setFee">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog  width="600px"  title="汇总保留金额" :visible.sync="dialogBalance">
+      <div>
+        <span>ETH保留：</span>
+        <span>{{reserved.eth}}</span>
+        <el-slider
+          v-model="reserved.eth"
+          :min="1"
+          :max="10"
+          :step="0.01"
+        >
+        </el-slider>
+      </div>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogBalance = false">取 消</el-button>
+        <el-button type="primary" @click="setReserve">确 定</el-button>
       </div>
     </el-dialog>
   </el-menu>
@@ -71,7 +92,8 @@ export default {
     Hamburger
   },
   props: {
-    fee: Object
+    fee: Object,
+    reserved: Object
   },
   computed: {
     ...mapGetters([
@@ -82,7 +104,8 @@ export default {
     return {
       avatar: '',
       dialogFormVisible: false,
-      permission: ''
+      permission: '',
+      dialogBalance: false
     }
   },
   mounted() {
@@ -96,6 +119,12 @@ export default {
     }
   },
   methods: {
+    setReserve() {
+      this.$store.dispatch('putReserved', this.reserved.eth).then(() => {
+        this.$message.success('修改成功')
+        this.dialogBalance = false
+      })
+    },
     toggleSideBar() {
       this.$store.dispatch('ToggleSideBar')
     },
@@ -105,8 +134,10 @@ export default {
       })
     },
     setFee() {
-      console.log(this.fee)
-      this.dialogFormVisible = false
+      this.$store.dispatch('putFeeData', this.fee).then(() => {
+        this.$message.success('修改成功')
+        this.dialogFormVisible = false
+      })
     }
   }
 }

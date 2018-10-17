@@ -34,7 +34,7 @@ export function addressAjax(data) {
 }
 export function addressInfo(data) {
   return request({
-    url: '/dashbord/account/count',
+    url: '/dashbord/account/count?tokenType=' + data,
     method: 'get'
   })
 }

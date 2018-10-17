@@ -4,9 +4,19 @@
       <el-col :span="2">
         <el-button>地址导入</el-button>
       </el-col>
-      <el-col :span="6" style="line-height: 40px">
+      <el-col :span="5" style="line-height: 40px">
         <span>待分配地址数量：{{addressData.surplus}}</span>
         <span style="padding-left:50px;">已分配地址数量：{{addressData.use}}</span>
+      </el-col>
+      <el-col :span="3">
+        <el-select @change="tokenFun" v-model="tokenType" placeholder="请选择">
+          <el-option
+            v-for="(v, k) in tokenList"
+            :key="k"
+            :label="v"
+            :value="v">
+          </el-option>
+        </el-select>
       </el-col>
       <el-col :span="3">
         <el-select @change="changeFun" v-model="companyName" placeholder="请选择">
@@ -18,7 +28,7 @@
           </el-option>
         </el-select>
       </el-col>
-      <el-col :span="6">
+      <el-col :span="5">
         <el-select @change="statusChange" v-model="companyStatus" placeholder="请选择">
           <el-option
             v-for="item in statusList"
@@ -29,7 +39,7 @@
         </el-select>
         <el-button @click="exportTable">导出表格</el-button>
       </el-col>
-      <el-col :span="7">
+      <el-col :span="6">
         <el-input placeholder="输入来源地址、交易哈希" v-model="searchText" class="input-with-select">
           <el-button slot="append" icon="el-icon-search" @click="searchHandler">搜索</el-button>
         </el-input>
@@ -76,6 +86,8 @@
     data() {
       return {
         searchText: '',
+        tokenList: ['ETH', 'BTC'],
+        tokenType: 'ETH',
         companyName: '',
         companyStatus: '',
         pageNum: 1,
@@ -98,7 +110,7 @@
     mounted() {
       // id=0&tokenType=1&address=2&createdAt=3&updatedAt=4&isUsed=5&balance=6&userId=7&shopId=8
       this.getTableData('pageNum=1&pageSize=20&orderBy=created_at')
-      this.$store.dispatch('getAddressData').then().catch()
+      this.$store.dispatch('getAddressData', this.tokenType).then().catch()
     },
     computed: {
       ...mapGetters({
@@ -108,6 +120,10 @@
       })
     },
     methods: {
+      tokenFun(v) {
+        this.tokenType = v
+        this.$store.dispatch('getAddressData', this.tokenType).then().catch()
+      },
       searchHandler() {
         this.getTableData(`pageNum=${this.pageNum}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&balance=6&userId=7&shopId=${this.companyName}`)
       },

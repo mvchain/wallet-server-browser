@@ -1,4 +1,4 @@
-import { adminList, createAdmin, deleteAdmin, modifyAdmin, managePermission, fee, totalBalance, putStatus, multipleAgree } from '@/api/admin'
+import { adminList, createAdmin, deleteAdmin, modifyAdmin, managePermission, fee, totalBalance, putStatus, multipleAgree, collect, allCollect, Ajaxreserve, setReserve, putFee } from '@/api/admin'
 import { companyList, createCompany, rwAjax, addressAjax, addressInfo, modifyCompany, withdrawAjax, importSign, statisticsData } from '@/api/Home'
 const center = {
   state: {
@@ -8,7 +8,9 @@ const center = {
     addressList: {},
     addressData: {},
     statisticsTable: {},
-    copyList: {}
+    copyList: {},
+    allBalance: [{ 'ETH': 0 }],
+    allStatistics: {}
   },
 
   mutations: {
@@ -32,6 +34,12 @@ const center = {
     },
     SET_STATISTICS_DATA: (state, payload) => {
       state.statisticsTable = payload
+    },
+    SET_ALL_BALANCE: (state, payload) => {
+      state.allBalance = payload
+    },
+    SET_ALL_STATISTICS: (state, payload) => {
+      state.allStatistics = payload
     }
   },
 
@@ -58,7 +66,7 @@ const center = {
     },
     getAddressData({ commit, state }, payload) {
       return new Promise((resolve, reject) => {
-        addressInfo().then(res => {
+        addressInfo(payload).then(res => {
           commit('SET_ADDRESS_DATA', res.data)
           resolve()
         }).catch(error => {
@@ -179,8 +187,17 @@ const center = {
     },
     getFeeData({ commit, state }, payload) {
       return new Promise((resolve, reject) => {
-        fee(payload).then(res => {
+        fee().then(res => {
           resolve(res.data)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    putFeeData({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        putFee(payload).then(res => {
+          resolve()
         }).catch(error => {
           reject(error)
         })
@@ -207,6 +224,44 @@ const center = {
     putMultipleAgree({ commit, state }, payload) {
       return new Promise((resolve, reject) => {
         multipleAgree(payload).then(res => {
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    getCollect({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        collect(payload).then(res => {
+          commit('SET_ALL_BALANCE', res.data)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    getSatisticsCollect({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        allCollect(payload).then(res => {
+          commit('SET_ALL_STATISTICS', res.data)
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    getReserved({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        Ajaxreserve(payload).then(res => {
+          resolve(res.data)
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    putReserved({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        setReserve(payload).then(res => {
           resolve()
         }).catch(error => {
           reject(error)

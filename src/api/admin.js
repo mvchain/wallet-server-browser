@@ -35,8 +35,30 @@ export function managePermission(data) {
 
 export function fee(data) {
   return request({
-    url: '/dashbord/fee?tokenType=' + data,
+    url: '/dashbord/fee',
     method: 'get'
+  })
+}
+
+export function putFee(data) {
+  return request({
+    url: '/dashbord/fee',
+    method: 'put',
+    data
+  })
+}
+
+export function Ajaxreserve() {
+  return request({
+    url: '/dashbord/fee/limit',
+    method: 'get'
+  })
+}
+
+export function setReserve(data) {
+  return request({
+    url: '/dashbord/fee/limit?limitFee=' + data,
+    method: 'put'
   })
 }
 
@@ -56,5 +78,17 @@ export function multipleAgree(data) {
   return request({
     url: `/dashbord/agree?ids=${data}`,
     method: 'put'
+  })
+}
+export function collect() {
+  return request({
+    url: '/dashbord/collect/total',
+    method: 'get'
+  })
+}
+export function allCollect(data) {
+  return request({
+    url: `/dashbord/collect?${data}`,
+    method: 'get'
   })
 }
