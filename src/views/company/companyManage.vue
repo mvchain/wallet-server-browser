@@ -13,24 +13,45 @@
           label="商家名称">
         </el-table-column>
         <el-table-column
-          prop="recharge30"
-          label="30日充值金额">
+          prop="rechargeEth30"
+          label="30日ETH充值金额">
         </el-table-column>
         <el-table-column
-          prop="rechargeNum30"
-          label="30日充值单数">
+          prop="rechargeEthNum30"
+          label="30日ETH充值单数">
         </el-table-column>
         <el-table-column
-          prop="withdraw30"
-          label="30日提币金额">
+          prop="rechargeBtc30"
+          label="30日BTC充值金额">
         </el-table-column>
         <el-table-column
-          prop="withdrawNum30"
-          label="30日提币单数">
+          prop="rechargeBtcNum30"
+          label="30日BTC充值单数">
+        </el-table-column>
+
+        <el-table-column
+          prop="withdrawEth30"
+          label="30日ETH提币金额">
         </el-table-column>
         <el-table-column
-          prop="balance"
-          label="钱包余额">
+          prop="withdrawEthNum30"
+          label="30日ETH提币单数">
+        </el-table-column>
+        <el-table-column
+          prop="withdrawBtc30"
+          label="30日BTC提币金额">
+        </el-table-column>
+        <el-table-column
+          prop="withdrawBtcNum30"
+          label="30日BTC提币单数">
+        </el-table-column>
+        <el-table-column
+          prop="btcBalance"
+          label="BTC钱包余额">
+        </el-table-column>
+        <el-table-column
+          prop="ethBalance"
+          label="ETH钱包余额">
         </el-table-column>
         <el-table-column
           label="操作">
@@ -268,6 +289,7 @@
         this.dialogWithdraw = true
         this.withdrawForm.shopId = obj.shopId
         this.withdrawForm.shopName = obj.shopName
+        this.withdrawForm.tokenType = this.tokenName
         this.withdrawForm.balance = obj.balance
       },
       ajaxWithdrawHandler(ruleForm) {

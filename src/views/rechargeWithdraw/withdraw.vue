@@ -120,18 +120,20 @@
           label="商家">
         </el-table-column>
         <el-table-column
-          prop="value"
           label="提币金额">
+          <template slot-scope="scope">
+            {{scope.row.value}}{{scope.row.tokenType}}
+          </template>
         </el-table-column>
         <el-table-column
           prop="toAddress"
           label="目标地址">
         </el-table-column>
         <el-table-column
-          prop="hash"
           label="交易哈希">
           <template slot-scope="scope">
-            <a target="_blank" :href="`https://etherscan.io/search?q=${scope.row.hash}`">{{scope.row.hash}}</a>
+            <a v-if="scope.row.tokenType === 'BTC'" target="_blank" :href="`https://btc.com/${scope.row.hash}`">{{scope.row.hash}}</a>
+            <a target="_blank" v-else  :href="`https://etherscan.io/search?q=${scope.row.hash}`">{{scope.row.hash}}</a>
           </template>
         </el-table-column>
         <el-table-column

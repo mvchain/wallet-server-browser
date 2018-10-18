@@ -2,14 +2,15 @@
   <div class="recharge-data">
     <el-row :gutter="20">
       <el-col :span="8">
-        <el-select @change="changeFun" v-model="balanceTitle" placeholder="请选择">
-          <el-option
-            v-for="item in balanceList"
-            :key="item.value"
-            :label="item.title"
-            :value="item.value">
-          </el-option>
-        </el-select>
+        <el-dropdown style="padding-top:20px;">
+          <span class="el-dropdown-link" >
+            总充值金额<i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>BTC总充值：{{btcTotal.btcAmount}}BTC</el-dropdown-item>
+            <el-dropdown-item>ETH总充值：{{btcTotal.ethAmount}}ETH</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </el-col>
       <el-col :span="3">
         <el-select @change="changeFun" v-model="companyName" placeholder="请选择">
@@ -153,6 +154,7 @@
         rangeWeek: [],
         rangeMonth: [],
         dateType: 0,
+        btcTotal: 0,
         startTime: '',
         stopTime: '',
         companyName: '',
@@ -187,11 +189,17 @@
       this.formatTime(this.rechargeTime, 'd')
       // startTime=1&stopTime=2&shopId=3&fromAddress=4&toAddress=5&hash=6&oprType=7&transactionId=8&transactionStatus=9&shopWithdraw=10&pageNum=11&pageSize=12&orderBy=13
       this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=withdraw&shopId=${this.companyName}`)
+      this.$store.dispatch('getTotalData', `oprType=withdraw&shopId=${this.companyName}`).then((res) => {
+        this.btcTotal = res
+      }).catch()
     },
     methods: {
       changeFun(v) {
         this.companyName = v
         this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=withdraw&shopId=${this.companyName}`)
+        this.$store.dispatch('getTotalData', `oprType=recharge&shopId=${this.companyName}`).then((res) => {
+          this.btcTotal = res
+        }).catch()
       },
       changeType(t) {
         this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${t}&oprType=withdraw`)

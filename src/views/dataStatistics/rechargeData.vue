@@ -7,8 +7,8 @@
             总充值金额<i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>BTC总充值：{{btcTotal}}</el-dropdown-item>
-            <el-dropdown-item>ETH总充值：{{ethTotal}}</el-dropdown-item>
+            <el-dropdown-item>BTC总充值：{{btcTotal.btcAmount}}BTC</el-dropdown-item>
+            <el-dropdown-item>ETH总充值：{{btcTotal.ethAmount}}ETH</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-col>
@@ -98,12 +98,24 @@
           label="日期">
         </el-table-column>
         <el-table-column
-          prop="value"
-          label="充值金额">
+          prop="shopName"
+          label="商户名">
         </el-table-column>
         <el-table-column
-          prop="orderCount"
-          label="订单数">
+          prop="btcValue"
+          label="BTC充值金额">
+        </el-table-column>
+        <el-table-column
+          prop="ethValue"
+          label="ETH充值金额">
+        </el-table-column>
+        <el-table-column
+          prop="orderBtcCount"
+          label="BTC订单数">
+        </el-table-column>
+        <el-table-column
+          prop="orderEthCount"
+          label="ETH订单数">
         </el-table-column>
       </el-table>
       <div style="margin-top:30px; text-align:center;">
@@ -152,7 +164,6 @@
       return {
         rechargeTime: [],
         btcTotal: 0,
-        ethTotal: 0,
         rangeWeek: [],
         rangeMonth: [],
         dateType: 0,
@@ -190,21 +201,15 @@
       this.formatTime(this.rechargeTime, 'd')
       // startTime=1&stopTime=2&shopId=3&fromAddress=4&toAddress=5&hash=6&oprType=7&transactionId=8&transactionStatus=9&shopWithdraw=10&pageNum=11&pageSize=12&orderBy=13
       this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=recharge&shopId=${this.companyName}`)
-      this.$store.dispatch('getTotalData', `type=btc&oprType=recharge&shopId=${this.companyName}`).then((res) => {
+      this.$store.dispatch('getTotalData', `oprType=recharge&shopId=${this.companyName}`).then((res) => {
         this.btcTotal = res
-      }).catch()
-      this.$store.dispatch('getTotalData', `type=eth&oprType=recharge&shopId=${this.companyName}`).then((res) => {
-        this.ethTotal = res
       }).catch()
     },
     methods: {
       changeFun(v) {
         this.companyName = v
-        this.$store.dispatch('getTotalData', `type=btc&oprType=recharge&shopId=${this.companyName}`).then((res) => {
+        this.$store.dispatch('getTotalData', `oprType=recharge&shopId=${this.companyName}`).then((res) => {
           this.btcTotal = res
-        }).catch()
-        this.$store.dispatch('getTotalData', `type=eth&oprType=recharge&shopId=${this.companyName}`).then((res) => {
-          this.ethTotal = res
         }).catch()
         this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=recharge&shopId=${this.companyName}`)
       },
