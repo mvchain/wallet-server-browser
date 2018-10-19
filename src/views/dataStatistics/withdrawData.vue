@@ -1,14 +1,14 @@
 <template>
   <div class="recharge-data">
     <el-row :gutter="20">
-      <el-col :span="8">
+      <el-col :span="6">
         <el-dropdown style="padding-top:20px;">
           <span class="el-dropdown-link" >
             总充值金额<i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>BTC总充值：{{btcTotal.btcAmount}}BTC</el-dropdown-item>
-            <el-dropdown-item>ETH总充值：{{btcTotal.ethAmount}}ETH</el-dropdown-item>
+            <el-dropdown-item>BTC总提币：{{btcTotal.btcAmount}}BTC</el-dropdown-item>
+            <el-dropdown-item>ETH总提币：{{btcTotal.ethAmount}}ETH</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-col>
@@ -98,12 +98,24 @@
           label="日期">
         </el-table-column>
         <el-table-column
-          prop="value"
-          label="提币金额">
+          prop="shopName"
+          label="商户名">
         </el-table-column>
         <el-table-column
-          prop="orderCount"
-          label="订单数">
+          prop="btcValue"
+          label="BTC提币金额">
+        </el-table-column>
+        <el-table-column
+          prop="ethValue"
+          label="ETH提币金额">
+        </el-table-column>
+        <el-table-column
+          prop="orderBtcCount"
+          label="BTC订单数">
+        </el-table-column>
+        <el-table-column
+          prop="orderEthCount"
+          label="ETH订单数">
         </el-table-column>
       </el-table>
       <div style="margin-top:30px; text-align:center;">

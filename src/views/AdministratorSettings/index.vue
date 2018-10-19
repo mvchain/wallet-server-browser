@@ -164,7 +164,7 @@
               this.subFlag = true
               const copyForm = {}
               Object.assign(copyForm, this.manageForm)
-              copyForm.password = md5(md5(copyForm.password) + this.manageForm.accountName)
+              copyForm.password = md5(md5(copyForm.password) + this.manageForm.username)
               copyForm.adminPassword = md5(md5(copyForm.adminPassword) + this.manage.username)
               copyForm.userId = copyForm.id
               this.ajaxFormHandler(this.dialogTitle, copyForm, ruleForm)
