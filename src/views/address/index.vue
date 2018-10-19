@@ -2,7 +2,18 @@
   <div class="address">
     <el-row :gutter="20">
       <el-col :span="2">
-        <el-button>地址导入</el-button>
+        <el-upload
+          class="upload-demo"
+          :action="action"
+          :headers="uploadHead"
+          :on-success="successFun"
+          :on-error="errorFun"
+          :show-file-list="false"
+          multiple
+          :limit="3"
+        >
+          <el-button >地址导入</el-button>
+        </el-upload>
       </el-col>
       <el-col :span="5" style="line-height: 40px">
         <span>待分配地址数量：{{addressData.surplus}}</span>
@@ -77,16 +88,23 @@
 
 <script>
   import {mapGetters} from 'vuex'
+  import { getToken } from '@/utils/auth'
   export default {
     name: 'setAddr',
     props: {
       permission: Number,
-      manage: Object
+      manage: Object,
+      permissionStr: String
     },
     data() {
       return {
         searchText: '',
         tokenList: ['ETH', 'BTC'],
+        durationTime: 3,
+        action: window.urlData.url + '/dashbord/account/import',
+        uploadHead: {
+          Authorization: getToken()
+        },
         tokenType: 'ETH',
         companyName: '',
         companyStatus: '',
@@ -120,6 +138,25 @@
       })
     },
     methods: {
+      successFun(s) {
+        if (s.code !== 200) {
+          this.$message.error(`导入失败${s.message}`)
+        } else {
+          window.setInterval(() => {
+            this.durationTime--
+            if (this.durationTime === -1) {
+              this.$router.go(0)
+            }
+          }, 1000)
+          this.$message.success({
+            message: '上传成功,3秒后刷新页面',
+            duration: 3000
+          })
+        }
+      },
+      errorFun() {
+        this.$message.error('导入失败')
+      },
       tokenFun(v) {
         this.tokenType = v
         this.$store.dispatch('getAddressData', this.tokenType).then().catch()

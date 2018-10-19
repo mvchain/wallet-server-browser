@@ -39,10 +39,10 @@
     <el-dialog width="500px" :title="dialogTitle?'新建管理员':'编辑管理员'" :visible.sync="dialogFormVisible" center>
       <el-form :rules="manageRule" :model="manageForm" ref="manageForm">
         <el-form-item label="名称：" :label-width="formLabelWidth" prop="username">
-          <el-input v-model="manageForm.username"></el-input>
+          <el-input v-model="manageForm.accountName"></el-input>
         </el-form-item>
         <el-form-item label="账户：" :label-width="formLabelWidth" prop="accountName">
-          <el-input v-model="manageForm.accountName"></el-input>
+          <el-input v-model="manageForm.username"></el-input>
         </el-form-item>
         <el-form-item label="密码：" :label-width="formLabelWidth" prop="password">
           <el-input type="password" v-model="manageForm.password"></el-input>
