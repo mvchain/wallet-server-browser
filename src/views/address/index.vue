@@ -126,7 +126,7 @@
       }
     },
     mounted() {
-      this.getTableData('pageNum=1&pageSize=20&orderBy=created_at&tokenType=ETH')
+      this.getTableData('pageNum=1&pageSize=20&orderBy=is_used desc,created_at desc&tokenType=ETH')
       this.$store.dispatch('getAddressData', this.tokenType).then().catch()
     },
     computed: {
@@ -159,25 +159,25 @@
       tokenFun(v) {
         this.tokenType = v
         this.$store.dispatch('getAddressData', this.tokenType).then().catch()
-        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&shopId=${this.companyName}&tokenType=${this.tokenType}`)
+        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&shopId=${this.companyName}&tokenType=${this.tokenType}&orderBy=is_used desc,created_at desc`)
       },
       searchHandler() {
-        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&shopId=${this.companyName}&tokenType=${this.tokenType}`)
+        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&shopId=${this.companyName}&tokenType=${this.tokenType}&orderBy=is_used desc,created_at desc`)
       },
       changeFun(v) {
         this.companyName = v
-        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&shopId=${v}&tokenType=${this.tokenType}`)
+        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&shopId=${v}&tokenType=${this.tokenType}&orderBy=is_used desc,created_at desc`)
       },
       statusChange(v) {
         this.companyStatus = v
-        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&shopId=${this.companyName}&tokenType=${this.tokenType}`)
+        this.getTableData(`pageNum=${this.pageNum}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&shopId=${this.companyName}&tokenType=${this.tokenType}&orderBy=is_used desc,created_at desc`)
       },
       getTableData(payload) {
         this.$store.dispatch('getAddressList', payload).then().catch()
       },
       handleCurrentChange(t) {
         this.pageNum = t
-        this.getTableData(`pageNum=${t}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&shopId=${this.companyName}&tokenType=${this.tokenType}`)
+        this.getTableData(`pageNum=${t}&pageSize=20&address=${this.searchText}&isUsed=${this.companyStatus}&shopId=${this.companyName}&tokenType=${this.tokenType}&orderBy=is_used desc,created_at desc`)
       },
       exportTable() {
         this.$store.dispatch('getSign').then((s) => {
