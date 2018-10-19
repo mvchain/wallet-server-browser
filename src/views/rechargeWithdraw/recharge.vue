@@ -1,27 +1,7 @@
 <template>
   <div class="recharge">
     <el-row :gutter="20">
-      <el-col v-if="permission === 0 || permission === 1" :span="6">
-        <el-col :span="7">
-          <el-upload
-            class="upload-demo"
-            :action="action"
-            :headers="uploadHead"
-            :disabled="!this.permissionStr.includes('2')"
-            :on-success="successFun"
-            :on-error="errorFun"
-            :show-file-list="false"
-            multiple
-            :limit="3"
-          >
-            <el-button >汇总导入</el-button>
-          </el-upload>
-        </el-col>
-        <el-col :span="8">
-          <el-button @click="dialogFormVisible = true">汇总导出</el-button>
-        </el-col>
-      </el-col>
-      <el-col  :span="10">
+      <el-col  :span="16">
         <el-select v-model="companyName" placeholder="请选择" v-if="permission === 0 || permission === 1">
           <el-option
             v-for="item in copyList.list"
@@ -87,14 +67,6 @@
         </el-pagination>
       </div>
     </div>
-    <el-dialog  width="400px" title="汇总导出设置" :visible.sync="dialogFormVisible">
-      <el-checkbox v-model="checkStatus">是否彻底清空所有用户地址内余额</el-checkbox>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="exportHandler">导 出</el-button>
-      </div>
-    </el-dialog>
-
   </div>
 </template>
 
@@ -111,16 +83,9 @@
     },
     data() {
       return {
-        checkStatus: false,
-        dialogFormVisible: false,
         rechargeTime: '',
-        action: window.urlData.url + '/dashbord/collect/import',
-        uploadHead: {
-          Authorization: getToken()
-        },
         searchText: '',
         pageNum: '1',
-        durationTime: 3,
         fromAddress: '',
         dateType: 0,
         companyName: '',
@@ -213,31 +178,6 @@
       handleCurrentChange(t) {
         this.pageNum = t
         this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
-      },
-      successFun(s) {
-        if (s.code !== 200) {
-          this.$message.error(`导入失败${s.message}`)
-        } else {
-          window.setInterval(() => {
-            this.durationTime--
-            if (this.durationTime === -1) {
-              this.$router.go(0)
-            }
-          }, 1000)
-          this.$message.success({
-            message: '上传成功,3秒后刷新页面',
-            duration: 3000
-          })
-        }
-      },
-      errorFun() {
-        this.$message.error('导入失败')
-      },
-      exportHandler() {
-        this.$store.dispatch('getSign').then((s) => {
-          window.open(`${window.urlData.url}/dashbord/collect/export?sign=${s}&shopId=${this.companyName}&all=${this.checkStatus}`)
-        }).catch()
-        this.dialogFormVisible = false
       }
     }
   }
