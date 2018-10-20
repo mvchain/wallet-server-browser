@@ -10,12 +10,13 @@ router.beforeEach((to, from, next) => {
   NProgress.start()
   if (getToken()) {
     store.dispatch('getManagePermission', '').then((res) => {
-      let permission = window.localStorage.get('permission')
+      let permission = window.localStorage.getItem('permission')
       if (permission) {
         permission = JSON.parse(permission)
       }
+      console.log(permission)
       permission.permissionList = res.list
-      window.localStorage.set('permission', JSON.stringify(permission))
+      window.localStorage.setItem('permission', JSON.stringify(permission))
     }).catch()
     if (to.path === '/login') {
       next({ path: '/' })
