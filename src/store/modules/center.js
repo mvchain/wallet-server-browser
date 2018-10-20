@@ -10,7 +10,8 @@ const center = {
     statisticsTable: {},
     copyList: {},
     allBalance: [{ 'ETH': 0 }],
-    allStatistics: {}
+    allStatistics: {},
+    permissionStr: ''
   },
 
   mutations: {
@@ -40,6 +41,9 @@ const center = {
     },
     SET_ALL_STATISTICS: (state, payload) => {
       state.allStatistics = payload
+    },
+    SET_PERMISSION_STR: (state, payload) => {
+      state.permissionStr = payload
     }
   },
 
@@ -275,6 +279,11 @@ const center = {
         }).catch(error => {
           reject(error)
         })
+      })
+    },
+    getPermissionStr({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        commit('SET_PERMISSION_STR', payload)
       })
     }
   }

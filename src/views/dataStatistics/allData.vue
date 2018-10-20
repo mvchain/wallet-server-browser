@@ -101,13 +101,13 @@
     name: 'allData',
     props: {
       permission: Number,
-      manage: Object,
-      permissionStr: String
+      manage: Object
     },
     computed: {
       ...mapGetters({
         allStatistics: 'allStatistics',
-        allBalance: 'allBalance'
+        allBalance: 'allBalance',
+        permissionStr: 'permissionStr'
       })
     },
     data() {

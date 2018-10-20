@@ -15,9 +15,9 @@
           <el-button >地址导入</el-button>
         </el-upload>
       </el-col>
-      <el-col :span="5" style="line-height: 40px">
+      <el-col :span="4" style="line-height: 40px">
         <span>待分配地址数量：{{addressData.surplus}}</span>
-        <span style="padding-left:50px;">已分配地址数量：{{addressData.use}}</span>
+        <p >已分配地址数量：{{addressData.use}}</p>
       </el-col>
       <el-col :span="3">
         <el-select @change="tokenFun" v-model="tokenType" placeholder="请选择">
@@ -91,11 +91,6 @@
   import { getToken } from '@/utils/auth'
   export default {
     name: 'setAddr',
-    props: {
-      permission: Number,
-      manage: Object,
-      permissionStr: String
-    },
     data() {
       return {
         searchText: '',

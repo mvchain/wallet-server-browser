@@ -136,8 +136,7 @@
     name: 'companyManage',
     props: {
       permission: Number,
-      manage: Object,
-      permissionStr: String
+      manage: Object
     },
     data() {
       return {
@@ -190,7 +189,8 @@
     },
     computed: {
       ...mapGetters({
-        companyList: 'companyList'
+        companyList: 'companyList',
+        permissionStr: 'permissionStr'
       })
     },
     mounted() {

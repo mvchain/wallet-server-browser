@@ -75,13 +75,11 @@
 <script>
   import {mapGetters} from 'vuex'
   import { formatTime } from '@/utils'
-  import { getToken } from '@/utils/auth'
   export default {
     name: 'recharge',
     props: {
       permission: Number,
-      manage: Object,
-      permissionStr: String
+      manage: Object
     },
     data() {
       return {

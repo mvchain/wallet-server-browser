@@ -9,6 +9,7 @@ const getters = {
   addressData: state => state.center.addressData,
   statisticsTable: state => state.center.statisticsTable,
   allBalance: state => state.center.allBalance,
-  allStatistics: state => state.center.allStatistics
+  allStatistics: state => state.center.allStatistics,
+  permissionStr: state => state.center.permissionStr
 }
 export default getters
