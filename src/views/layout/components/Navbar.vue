@@ -15,16 +15,16 @@
           <span @click="dialogBalance = true">汇总保留金额</span>
         </el-dropdown-item>
         <el-dropdown-item v-if="permission == 2 || permission == 3">
-          <span >BTC待提金额：20000</span>
+          <span >BTC待提金额：{{withdrawManage.withdrawBtcAmount}}</span>
         </el-dropdown-item>
         <el-dropdown-item v-if="permission == 2 || permission == 3">
-          <span @click="dialogFormVisible = true">BTC余额：20000</span>
+          <span >BTC余额：{{withdrawManage.balanceBTC}}</span>
         </el-dropdown-item>
         <el-dropdown-item v-if="permission == 2 || permission == 3">
-          <span >ETH待提金额：20000</span>
+          <span >ETH待提金额：{{withdrawManage.withdrawEthAmount}}</span>
         </el-dropdown-item>
         <el-dropdown-item v-if="permission == 2 || permission == 3">
-          <span @click="dialogFormVisible = true">ETH待提金额：20000</span>
+          <span>BTC待提金额：{{withdrawManage.balanceEth}}</span>
         </el-dropdown-item>
         <el-dropdown-item divided>
           <span @click="logout" style="display:block;">退出</span>
@@ -93,7 +93,8 @@ export default {
   },
   props: {
     fee: Object,
-    reserved: Object
+    reserved: Object,
+    withdrawManage: Object
   },
   computed: {
     ...mapGetters([

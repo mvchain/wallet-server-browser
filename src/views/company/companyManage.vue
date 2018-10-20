@@ -13,46 +13,47 @@
           label="商家名称">
         </el-table-column>
         <el-table-column
-          prop="rechargeEth30"
-          label="30日ETH充值金额">
+          prop="adminName"
+          label="管理员账号">
         </el-table-column>
         <el-table-column
-          prop="rechargeEthNum30"
-          label="30日ETH充值单数">
+          label="30日充值金额">
+          <template slot-scope="scope">
+            <div>ETH:{{scope.row.rechargeEth30}}</div>
+            <div>BTC:{{scope.row.rechargeBtc30}}</div>
+          </template>
         </el-table-column>
         <el-table-column
-          prop="rechargeBtc30"
-          label="30日BTC充值金额">
-        </el-table-column>
-        <el-table-column
-          prop="rechargeBtcNum30"
-          label="30日BTC充值单数">
+          label="30日充值单数">
+          <template slot-scope="scope">
+            <div>ETH:{{scope.row.rechargeEthNum30}}</div>
+            <div>BTC:{{scope.row.rechargeBtcNum30}}</div>
+          </template>
         </el-table-column>
 
         <el-table-column
-          prop="withdrawEth30"
-          label="30日ETH提币金额">
+          label="30日提币金额">
+          <template slot-scope="scope">
+            <div>ETH:{{scope.row.withdrawEth30}}</div>
+            <div>BTC:{{scope.row.withdrawBtc30}}</div>
+          </template>
         </el-table-column>
         <el-table-column
-          prop="withdrawEthNum30"
-          label="30日ETH提币单数">
+          label="30日提币单数">
+          <template slot-scope="scope">
+            <div>ETH:{{scope.row.withdrawEthNum30}}</div>
+            <div>BTC:{{scope.row.withdrawBtcNum30}}</div>
+          </template>
         </el-table-column>
+
         <el-table-column
-          prop="withdrawBtc30"
-          label="30日BTC提币金额">
+          label="钱包余额">
+          <template slot-scope="scope">
+            <div>ETH:{{scope.row.btcBalance}}</div>
+            <div>BTC:{{scope.row.ethBalance}}</div>
+          </template>
         </el-table-column>
-        <el-table-column
-          prop="withdrawBtcNum30"
-          label="30日BTC提币单数">
-        </el-table-column>
-        <el-table-column
-          prop="btcBalance"
-          label="BTC钱包余额">
-        </el-table-column>
-        <el-table-column
-          prop="ethBalance"
-          label="ETH钱包余额">
-        </el-table-column>
+
         <el-table-column
           label="操作">
           <template slot-scope="scope">

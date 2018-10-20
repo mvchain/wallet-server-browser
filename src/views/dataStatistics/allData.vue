@@ -146,7 +146,7 @@
       },
       handleCurrentChange(t) {
         this.pageNum = t
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=recharge&shopId=${this.companyName}`)
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&dateType=${this.dateType}&oprType=recharge`)
       },
 
       formatTime(t, d) {
@@ -174,7 +174,7 @@
       },
       exportHandler() {
         this.$store.dispatch('getSign').then((s) => {
-          window.open(`${window.urlData.url}/dashbord/collect/export?sign=${s}&shopId=${this.companyName}&all=${this.checkStatus}`)
+          window.open(`${window.urlData.url}/dashbord/collect/export?sign=${s}&all=${this.checkStatus}`)
         }).catch()
         this.dialogFormVisible = false
       }

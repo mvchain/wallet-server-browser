@@ -1,4 +1,4 @@
-import { adminList, createAdmin, deleteAdmin, modifyAdmin, managePermission, fee, totalBalance, putStatus, multipleAgree, collect, allCollect, Ajaxreserve, setReserve, putFee } from '@/api/admin'
+import { adminList, createAdmin, deleteAdmin, modifyAdmin, managePermission, fee, totalBalance, putStatus, multipleAgree, collect, allCollect, Ajaxreserve, setReserve, putFee,withdrawManage } from '@/api/admin'
 import { companyList, createCompany, rwAjax, addressAjax, addressInfo, modifyCompany, withdrawAjax, importSign, statisticsData } from '@/api/Home'
 const center = {
   state: {
@@ -263,6 +263,15 @@ const center = {
       return new Promise((resolve, reject) => {
         setReserve(payload).then(res => {
           resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    getWithdrawManage({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        withdrawManage(payload).then(res => {
+          resolve(res.data)
         }).catch(error => {
           reject(error)
         })

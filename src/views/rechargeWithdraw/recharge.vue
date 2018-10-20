@@ -43,8 +43,10 @@
           label="商家">
         </el-table-column>
         <el-table-column
-          prop="value"
           label="充值金额">
+          <template slot-scope="scope">
+            {{scope.row.value}}{{scope.row.tokenType}}
+          </template>
         </el-table-column>
         <el-table-column
           prop="fromAddress"
@@ -170,7 +172,6 @@
         this.$store.dispatch('getRWList', payload).then().catch()
       },
       exportFun() {
-        if (!this.permissionStr.includes('2')) return
         this.$store.dispatch('getSign').then((s) => {
           window.open(`${window.urlData.url}/dashbord/transaction/export?sign=${s}&startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0`)
         }).catch()

@@ -2,7 +2,7 @@
   <div class="app-wrapper" :class="{hideSidebar:!sidebar.opened}">
     <sidebar class="sidebar-container"></sidebar>
     <div class="main-container">
-      <navbar :fee="newFee" :reserved="reserve"></navbar>
+      <navbar :fee="newFee" :reserved="reserve" :withdrawManage="withdrawManage"></navbar>
       <app-main></app-main>
     </div>
   </div>
@@ -21,7 +21,8 @@ export default {
       },
       reserve: {
         eth: 0
-      }
+      },
+      withdrawManage: {}
     }
   },
   components: {
@@ -41,6 +42,9 @@ export default {
     }).catch()
     this.$store.dispatch('getReserved').then((res) => {
       this.reserve.eth = res
+    }).catch()
+    this.$store.dispatch('getWithdrawManage', 'eth').then((res) => {
+      this.withdrawManage = res
     }).catch()
   }
 }

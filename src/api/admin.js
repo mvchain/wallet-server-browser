@@ -92,3 +92,9 @@ export function allCollect(data) {
     method: 'get'
   })
 }
+export function withdrawManage(data) {
+  return request({
+    url: `/dashbord/balance?type=${data}`,
+    method: 'get'
+  })
+}
