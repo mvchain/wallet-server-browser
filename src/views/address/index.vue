@@ -48,7 +48,7 @@
             :value="item.id">
           </el-option>
         </el-select>
-        <el-button @click="exportTable">导出表格</el-button>
+        <el-button  @click="exportTable">导出表格</el-button>
       </el-col>
       <el-col :span="6">
         <el-input placeholder="输入来源地址、交易哈希" v-model="searchText" class="input-with-select">

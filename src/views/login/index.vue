@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <el-form autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left"
+    <el-form @keyup.enter.native="handleLogin('loginForm')" autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left"
              label-width="0px"
              class="card-box login-form">
       <h3 class="title">钱包服务器后台</h3>
@@ -19,6 +19,14 @@
                   placeholder="password"></el-input>
         <span class="show-pwd" @click="showPwd"><svg-icon icon-class="eye"/></span>
       </el-form-item>
+      <el-form-item prop="valiCode" >
+        <el-col :span="12">
+          <el-input placeholder="输入验证码" v-model="loginForm.valiCode" type="text"></el-input>
+        </el-col>
+        <el-col :span="12" style="text-align: right;line-height: 0;">
+          <b @click="createCode"><img :src="verificationImg" alt=""></b>
+        </el-col>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" style="width:100%;" v-loading="loading" @click="handleLogin">
           登 录
@@ -34,6 +42,7 @@
   export default {
     name: 'login',
     mounted() {
+      this.createCode()
     },
     data() {
       const validateUsername = (rule, value, callback) => {
@@ -53,17 +62,23 @@
       return {
         loginForm: {
           username: 'admin',
-          password: 'admin'
+          password: 'admin',
+          valiCode: ''
         },
+        verificationImg: '',
         loginRules: {
           username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-          password: [{ required: true, trigger: 'blur', validator: validatePass }]
+          password: [{ required: true, trigger: 'blur', validator: validatePass }],
+          valiCode: [{ required: true, trigger: 'blur', message: '请输入验证码' }]
         },
         loading: false,
         pwdType: 'password'
       }
     },
     methods: {
+      createCode() {
+        this.verificationImg = window.urlData.url + '/dashbord/validate/image?t=' + Date.now()
+      },
       showPwd() {
         if (this.pwdType === 'password') {
           this.pwdType = ''
@@ -81,14 +96,17 @@
             this.$store.dispatch('Login', copyForm).then(() => {
               this.loading = false
               this.$router.push({ path: '/' })
+              this.createCode()
             }).catch(() => {
               this.loading = false
+              this.createCode()
             })
           } else {
             this.$message.error('请正确填写表单')
             return false
           }
         })
+
       }
     }
   }
