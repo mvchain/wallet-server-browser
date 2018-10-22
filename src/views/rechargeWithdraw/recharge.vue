@@ -24,7 +24,7 @@
         <el-button @click="exportFun">表格导出</el-button>
       </el-col>
       <el-col :span="8">
-        <el-input placeholder="输入来源地址、交易哈希" v-model="searchText" class="input-with-select">
+        <el-input placeholder="输入目标地址、交易哈希" v-model="searchText" class="input-with-select">
           <el-button @click="searchHandler" slot="append" icon="el-icon-search">搜索</el-button>
         </el-input>
       </el-col>
@@ -49,14 +49,21 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="fromAddress"
-          label="来源地址">
+          prop="toAddress"
+          label="目标地址">
         </el-table-column>
         <el-table-column
           label="交易哈希">
           <template slot-scope="scope">
             <a v-if="scope.row.tokenType === 'BTC'" target="_blank" :href="`https://btc.com/${scope.row.hash}`">{{scope.row.hash}}</a>
             <a target="_blank" v-else  :href="`https://etherscan.io/search?q=${scope.row.hash}`">{{scope.row.hash}}</a>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="statusStr"
+          label="状态">
+          <template slot-scope="scope" >
+            {{scope.row.status.substr(-1) === '1' ? '正在充值' : scope.row.status.substr(-1) === '2' ? '充值成功' : '充值失败'}}
           </template>
         </el-table-column>
       </el-table>
@@ -86,7 +93,7 @@
         rechargeTime: '',
         searchText: '',
         pageNum: '1',
-        fromAddress: '',
+        toAddress: '',
         dateType: 0,
         companyName: '',
         hash: '',
@@ -131,30 +138,38 @@
       })
     },
     mounted() {
+      let t = ''
+      if (this.$route.query.startTime && this.$route.query.stopTime) {
+        t = `startTime=${this.$route.query.startTime}&stopTime=${this.$route.query.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=recharge&hash=${this.hash}&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`
+      } else {
+        t = 'pageNum=1&pageSize=20&oprType=recharge&shopWithdraw=0&orderBy=created_at desc'
+      }
+
       // startTime=1&stopTime=2&shopId=3&fromAddress=4&toAddress=5&hash=6&oprType=7&transactionId=8&transactionStatus=9&shopWithdraw=10&pageNum=11&pageSize=12&orderBy=13
-      this.getTableData('pageNum=1&pageSize=20&oprType=recharge&shopWithdraw=0&orderBy=created_at desc')
+      this.getTableData(t)
+      // startTime=1&stopTime=2&shopId=3&toAddress=4&toAddress=5&hash=6&oprType=7&transactionId=8&transactionStatus=9&shopWithdraw=10&pageNum=11&pageSize=12&orderBy=13
     },
     methods: {
       shopHandler() {
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
       },
       searchHandler() {
         this.searchText = this.searchText.replace(/\s/g, '')
-        if (this.searchText.length !== 42 && this.searchText.length !== 34) {
+        if (this.searchText.length !== 42 && this.searchText.length !== 35) {
           this.hash = this.searchText
-          this.fromAddress = ''
+          this.toAddress = ''
         } else if (this.searchText === '') {
           this.hash = ''
-          this.fromAddress = ''
+          this.toAddress = ''
         } else {
-          this.fromAddress = this.searchText
+          this.toAddress = this.searchText
           this.hash = ''
         }
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
       },
       timeChange() {
         this.timeFormat()
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
       },
       timeFormat() {
         if (this.rechargeTime === null) {
@@ -167,20 +182,20 @@
       },
       changeFun(v) {
         this.companyName = v
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
       },
       getTableData(payload) {
         this.$store.dispatch('getRWList', payload).then().catch()
       },
       exportFun() {
         this.$store.dispatch('getSign').then((s) => {
-          window.open(`${window.urlData.url}/dashbord/transaction/export?sign=${s}&startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0`)
+          window.open(`${window.urlData.url}/dashbord/transaction/export?sign=${s}&startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0`)
         }).catch()
       },
       handleCurrentChange(t) {
         this.pageNum = t
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
-      }
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+      },
     }
   }
 </script>

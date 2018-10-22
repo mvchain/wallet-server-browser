@@ -191,8 +191,14 @@
       manage: Object
     },
     mounted() {
+      let t = ''
+      if (this.$route.query.startTime && this.$route.query.stopTime) {
+        t = `startTime=${this.$route.query.startTime}&stopTime=${this.$route.query.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=withdraw&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`
+      } else {
+        t = 'pageNum=1&pageSize=20&oprType=withdraw&shopWithdraw=0&orderBy=created_at desc'
+      }
       // startTime=1&stopTime=2&shopId=3&fromAddress=4&toAddress=5&hash=6&oprType=7&transactionId=8&transactionStatus=9&shopWithdraw=10&pageNum=11&pageSize=12&orderBy=13
-      this.getTableData('pageNum=1&pageSize=20&oprType=withdraw&shopWithdraw=0&orderBy=created_at desc')
+      this.getTableData(t)
     },
     data() {
       return {
@@ -205,7 +211,7 @@
         transactionId: '',
         pageNum: '1',
         durationTime: 3,
-        fromAddress: '',
+        toAddress: '',
         multipleSelection: [],
         dateType: 0,
         companyName: '',
@@ -275,14 +281,14 @@
       },
       searchHandler() {
         this.searchText = this.searchText.replace(/\s/g, '')
-        if (this.searchText.length !== 42 && this.searchText.length !== 34) {
+        if (this.searchText.length !== 42 && this.searchText.length !== 35) {
           this.transactionId = this.searchText
-          this.fromAddress = ''
+          this.toAddress = ''
         } else if (this.searchText === '') {
           this.transactionId = ''
-          this.fromAddress = ''
+          this.toAddress = ''
         } else {
-          this.fromAddress = this.searchText
+          this.toAddress = this.searchText
           this.transactionId = ''
         }
         this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.fromAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)

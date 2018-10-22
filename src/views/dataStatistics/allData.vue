@@ -129,7 +129,7 @@
       this.formatTime(this.rechargeTime)
       this.$store.dispatch('getCollect')
       // /dashbord/collect?pageNum=1&pageSize=2&orderBy=3&startTime=4&stopTime=5
-      this.getTableData(`pageNum=${this.pageNum}&pageSize=2&orderBy=created_at desc&startTime=${this.startTime}&stopTime=${this.stopTime}`)
+      this.getTableData(`pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc&startTime=${this.startTime}&stopTime=${this.stopTime}`)
     },
     methods: {
       timeChange() {

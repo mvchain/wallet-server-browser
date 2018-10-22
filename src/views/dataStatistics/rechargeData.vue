@@ -91,6 +91,7 @@
     <div style="margin-top:20px;">
       <el-table
         :data="statisticsTable.list"
+        @row-click="rowClick"
         border
         style="width: 100%">
         <el-table-column
@@ -206,6 +207,26 @@
       }).catch()
     },
     methods: {
+      rowClick(r) {
+        let startTime = ''
+        let stopTime = ''
+        if (r.dateStr.includes('至')) {
+          startTime = r.dateStr.split('至')[0].replace(/-/ig, '/') + ' 0:0:0'
+          stopTime = r.dateStr.split('至')[1].replace(/-/ig, '/') + ' 23:59:59'
+        } else {
+          if (r.dateStr.length > 7) {
+            startTime = r.dateStr.replace(/-/ig, '/') + ' 0:0:0'
+            stopTime = r.dateStr.replace(/-/ig, '/') + ' 23:59:59'
+          } else {
+            const mm = new Date(r.date).getMonth() + 1
+            const yy = new Date(r.date).getFullYear()
+            const temp = new Date(yy, mm, 0)
+            startTime = formatTime(new Date(r.date)).split(' ')[0] + ' 0:0:0'
+            stopTime = formatTime(temp).replace(/0:0:0/ig, '') + '23:59:59'
+          }
+        }
+        this.$router.push({ path: '/rechargeWithdraw/recharge', query: { startTime, stopTime }})
+      },
       changeFun(v) {
         this.companyName = v
         this.$store.dispatch('getTotalData', `oprType=recharge&shopId=${this.companyName}`).then((res) => {
