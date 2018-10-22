@@ -2,7 +2,7 @@
   <div class="recharge">
     <el-row :gutter="20">
       <el-col  :span="16">
-        <el-select v-model="companyName" placeholder="请选择" v-if="permission === 0 || permission === 1">
+        <el-select @change="shopHandler" v-model="companyName" placeholder="请选择" v-if="permission === 0 || permission === 1">
           <el-option
             v-for="item in copyList.list"
             :key="item.shopId"
@@ -135,6 +135,9 @@
       this.getTableData('pageNum=1&pageSize=20&oprType=recharge&shopWithdraw=0&orderBy=created_at desc')
     },
     methods: {
+      shopHandler() {
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&fromAddress=${this.fromAddress}&oprType=recharge&hash=${this.hash}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+      },
       searchHandler() {
         this.searchText = this.searchText.replace(/\s/g, '')
         if (this.searchText.length !== 42 && this.searchText.length !== 34) {

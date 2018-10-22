@@ -24,7 +24,7 @@
           <span >ETH待提金额：{{withdrawManage.withdrawEthAmount}}</span>
         </el-dropdown-item>
         <el-dropdown-item v-if="permission == 2 || permission == 3">
-          <span>BTC待提金额：{{withdrawManage.balanceEth}}</span>
+          <span>ETH余额：{{withdrawManage.balanceEth}}</span>
         </el-dropdown-item>
         <el-dropdown-item divided>
           <span @click="logout" style="display:block;">退出</span>

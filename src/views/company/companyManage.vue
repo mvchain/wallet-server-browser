@@ -49,8 +49,8 @@
         <el-table-column
           label="钱包余额">
           <template slot-scope="scope">
-            <div>ETH:{{scope.row.btcBalance}}</div>
-            <div>BTC:{{scope.row.ethBalance}}</div>
+            <div>ETH:{{scope.row.ethBalance}}</div>
+            <div>BTC:{{scope.row.btcBalance}}</div>
           </template>
         </el-table-column>
 
