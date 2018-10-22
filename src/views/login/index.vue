@@ -61,8 +61,8 @@
       }
       return {
         loginForm: {
-          username: 'admin',
-          password: 'admin',
+          username: '',
+          password: '',
           valiCode: ''
         },
         verificationImg: '',
