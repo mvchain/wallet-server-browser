@@ -31,7 +31,7 @@
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
-    <el-dialog  width="600px"  title="转账手续费设置" :visible.sync="dialogFormVisible">
+    <el-dialog :close-on-click-modal="false"  width="600px"  title="转账手续费设置" :visible.sync="dialogFormVisible">
       <div>
         <span>BTC手续费：</span>
         <span>{{fee.btcGas}}</span>
@@ -60,7 +60,7 @@
         <el-button type="primary" @click="setFee">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog  width="600px"  title="汇总保留金额" :visible.sync="dialogBalance">
+    <el-dialog :close-on-click-modal="false"  width="600px"  title="汇总保留金额" :visible.sync="dialogBalance">
       <div>
         <span>ETH保留：</span>
         <span>{{reserved.eth}}</span>
