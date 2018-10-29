@@ -26,6 +26,9 @@
         <el-dropdown-item v-if="permission == 2 || permission == 3">
           <span>ETH余额：{{withdrawManage.balanceEth}}</span>
         </el-dropdown-item>
+        <el-dropdown-item v-if="permission == 2 || permission == 3">
+          <span @click="showAddress" >充值地址</span>
+        </el-dropdown-item>
         <el-dropdown-item divided>
           <span @click="logout" style="display:block;">退出</span>
         </el-dropdown-item>
@@ -66,9 +69,9 @@
         <span>{{reserved.eth}}</span>
         <el-slider
           v-model="reserved.eth"
-          :min="1"
+          :min="fee.ethGas"
           :max="10"
-          :step="0.01"
+          :step="0.001"
         >
         </el-slider>
       </div>
@@ -76,6 +79,14 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogBalance = false">取 消</el-button>
         <el-button type="primary" @click="setReserve">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog :close-on-click-modal="false"  width="600px"  title="充值地址" :visible.sync="showAddressFlag">
+      <div>
+        <span v-if="addressObj.length">{{addressObj[0].tokenType}}:{{addressObj[0].address}}</span>
+      </div>
+      <div>
+        <span v-if="addressObj.length">{{addressObj[1].tokenType}}:{{addressObj[1].address}}</span>
       </div>
     </el-dialog>
   </el-menu>
@@ -106,7 +117,9 @@ export default {
       avatar: '',
       dialogFormVisible: false,
       permission: '',
-      dialogBalance: false
+      dialogBalance: false,
+      showAddressFlag: false,
+      addressObj: []
     }
   },
   mounted() {
@@ -120,6 +133,12 @@ export default {
     }
   },
   methods: {
+    showAddress() {
+      this.showAddressFlag = true
+      this.$store.dispatch('getRechargeAddress', '').then((res) => {
+        this.addressObj = res
+      }).catch()
+    },
     setReserve() {
       this.$store.dispatch('putReserved', this.reserved.eth).then(() => {
         this.$message.success('修改成功')

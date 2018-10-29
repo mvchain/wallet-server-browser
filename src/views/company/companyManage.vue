@@ -65,6 +65,7 @@
                 <el-dropdown-item :command="[scope.row, 1]">编辑</el-dropdown-item>
                 <el-dropdown-item :command="[scope.row, 2]">ETH提现</el-dropdown-item>
                 <el-dropdown-item :command="[scope.row, 3]">BTC提现</el-dropdown-item>
+                <el-dropdown-item :command="[scope.row, 4]">充值地址</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </template>
@@ -126,6 +127,14 @@
         <el-button :loading="subFlag" type="primary" @click="ajaxWithdrawHandler('withdrawForm')">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog :close-on-click-modal="false"  width="600px"  title="充值地址" :visible.sync="showAddressFlag">
+      <div>
+        <span v-if="addressObj.length">{{addressObj[0].tokenType}}：{{addressObj[0].address}}</span>
+      </div>
+      <div>
+        <span v-if="addressObj.length">{{addressObj[1].tokenType}}：{{addressObj[1].address}}</span>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -145,6 +154,8 @@
         dialogFormVisible: false,
         dialogWithdraw: false,
         subFlag: false,
+        showAddressFlag: false,
+        addressObj: [],
         pageNum: 1,
         formLabelWidth: '100px',
         companyForm: {
@@ -211,6 +222,12 @@
             if (!this.permissionStr.includes('3')) return
             this.tokenName = 'BTC'
             this.withDrawManage(v[0])
+            break
+          case 4:
+            this.showAddressFlag = true
+            this.$store.dispatch('getRechargeAddress', v[0].shopId).then((res) => {
+              this.addressObj = res
+            }).catch()
             break
         }
       },

@@ -1,4 +1,4 @@
-import { adminList, createAdmin, deleteAdmin, modifyAdmin, managePermission, fee, totalBalance, putStatus, multipleAgree, collect, allCollect, Ajaxreserve, setReserve, putFee,withdrawManage } from '@/api/admin'
+import { adminList, createAdmin, deleteAdmin, modifyAdmin, managePermission, fee, totalBalance, putStatus, multipleAgree, collect, allCollect, Ajaxreserve, setReserve, putFee, withdrawManage, rechargeAddress } from '@/api/admin'
 import { companyList, createCompany, rwAjax, addressAjax, addressInfo, modifyCompany, withdrawAjax, importSign, statisticsData } from '@/api/Home'
 const center = {
   state: {
@@ -284,6 +284,15 @@ const center = {
     getPermissionStr({ commit, state }, payload) {
       return new Promise((resolve, reject) => {
         commit('SET_PERMISSION_STR', payload)
+      })
+    },
+    getRechargeAddress({ commit, state }, payload) {
+      return new Promise((resolve, reject) => {
+        rechargeAddress(payload).then(res => {
+          resolve(res.data)
+        }).catch(error => {
+          reject(error)
+        })
       })
     }
   }

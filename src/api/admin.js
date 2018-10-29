@@ -98,3 +98,9 @@ export function withdrawManage(data) {
     method: 'get'
   })
 }
+export function rechargeAddress(data) {
+  return request({
+    url: `/dashbord/shop/wallet?shopId=${data}`,
+    method: 'get'
+  })
+}
