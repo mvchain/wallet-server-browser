@@ -131,7 +131,7 @@
       <div>
         <span v-if="addressObj.length">{{addressObj[0].tokenType}}：{{addressObj[0].address}}</span>
       </div>
-      <div>
+      <div style="margin-top:15px;">
         <span v-if="addressObj.length">{{addressObj[1].tokenType}}：{{addressObj[1].address}}</span>
       </div>
     </el-dialog>

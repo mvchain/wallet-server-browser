@@ -40,9 +40,9 @@
         <span>{{fee.btcGas}}</span>
         <el-slider
           v-model="fee.btcGas"
-          :min="0.00001"
-          :max="0.0001"
-          :step="0.000001"
+          :min="0.0001"
+          :max="0.001"
+          :step="0.00001"
         >
         </el-slider>
       </div>
