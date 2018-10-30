@@ -51,7 +51,7 @@
         <span>{{fee.ethGas}}</span>
         <el-slider
           v-model="fee.ethGas"
-          :min="0.0000210"
+          :min="0.000210"
           :max="0.002100"
           :step="0.0000021"
         >
