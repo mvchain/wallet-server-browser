@@ -3,7 +3,10 @@ import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const user = {
   state: {
-    token: getToken()
+    token: getToken(),
+    name: '',
+    avatar: '',
+    roles: []
   },
 
   mutations: {
@@ -22,7 +25,7 @@ const user = {
             permissionList: res.permissionList
           }
           state.avatar = payload.username
-          window.localStorage.setItem('user', JSON.stringify({refreshToken: res.refreshToken, username: payload.username}))
+          window.localStorage.setItem('user', JSON.stringify({ refreshToken: res.refreshToken, username: payload.username }))
           window.localStorage.setItem('permission', JSON.stringify(permission))
           setToken(res.token)
           commit('SET_TOKEN', res.token)
