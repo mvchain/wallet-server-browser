@@ -140,7 +140,7 @@
           prop="statusStr"
           label="状态">
           <template slot-scope="scope" >
-            <el-dropdown v-if="scope.row.transactionStatus === 1 && (permission === 2 || permission === 3)" @command="handleCommand" :disabled="true">
+            <el-dropdown v-if="scope.row.transactionStatus === 1" @command="handleCommand" :disabled="true">
               <span class="el-dropdown-link">
                 待审核<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
@@ -149,7 +149,7 @@
                 <el-dropdown-item :disabled="!permissionStr.includes('4')" :command="{id: scope.row.id, status: 3}">拒绝</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <el-dropdown v-else-if="scope.row.transactionStatus === 6 && (permission === 2 || permission === 3)" @command="handleCommand" :disabled="true">
+            <el-dropdown v-else-if="scope.row.transactionStatus === 6" @command="handleCommand" :disabled="true">
               <span class="el-dropdown-link" :title="scope.row.errorData">
                 失败:{{scope.row.errorMsg}}<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
