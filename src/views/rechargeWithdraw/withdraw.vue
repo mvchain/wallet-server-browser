@@ -108,7 +108,7 @@
           width="55">
         </el-table-column>
         <el-table-column
-          prop="createdAtStr"
+          prop="updatedAtStr"
           label="时间">
         </el-table-column>
         <el-table-column
@@ -194,9 +194,9 @@
     mounted() {
       let t = ''
       if (this.$route.query.startTime && this.$route.query.stopTime) {
-        t = `startTime=${this.$route.query.startTime}&stopTime=${this.$route.query.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=withdraw&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`
+        t = `startTime=${this.$route.query.startTime}&stopTime=${this.$route.query.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=withdraw&pageNum=${this.pageNum}&pageSize=20&orderBy=updated_at desc`
       } else {
-        t = 'pageNum=1&pageSize=20&oprType=withdraw&shopWithdraw=0&orderBy=created_at desc'
+        t = 'pageNum=1&pageSize=20&oprType=withdraw&shopWithdraw=0&orderBy=updated_at desc'
       }
       // startTime=1&stopTime=2&shopId=3&toAddress=4&toAddress=5&hash=6&oprType=7&transactionId=8&transactionStatus=9&shopWithdraw=10&pageNum=11&pageSize=12&orderBy=13
       this.getTableData(t)
@@ -268,7 +268,7 @@
           type: 'warning'
         }).then(() => {
           this.$store.dispatch('putMultipleAgree', ids.toString()).then(() => {
-            this.getTableData('pageNum=1&pageSize=20&oprType=withdraw&shopWithdraw=0&orderBy=created_at desc')
+            this.getTableData('pageNum=1&pageSize=20&oprType=withdraw&shopWithdraw=0&orderBy=updated_at desc')
           }).catch()
         }).catch(() => {})
       },
@@ -277,7 +277,7 @@
       },
       handleCommand(v) {
         this.$store.dispatch('putTransactionStatus', v).then(() => {
-          this.getTableData('pageNum=1&pageSize=20&oprType=withdraw&shopWithdraw=0&orderBy=created_at desc')
+          this.getTableData('pageNum=1&pageSize=20&oprType=withdraw&shopWithdraw=0&orderBy=updated_at desc')
         }).catch()
       },
       searchHandler() {
@@ -292,11 +292,11 @@
           this.toAddress = this.searchText
           this.transactionId = ''
         }
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=updated_at desc`)
       },
       timeChange() {
         this.timeFormat()
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=updated_at desc`)
       },
       timeFormat() {
         if (this.rechargeTime === null) {
@@ -309,11 +309,11 @@
       },
       changeFun(v) {
         this.companyName = v
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=updated_at desc`)
       },
       statusChange(v) {
         this.companyStatus = v
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=updated_at desc`)
       },
       getTableData(payload) {
         this.$store.dispatch('getRWList', payload).then().catch()
@@ -331,7 +331,7 @@
       },
       handleCurrentChange(t) {
         this.pageNum = t
-        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=created_at desc`)
+        this.getTableData(`startTime=${this.startTime}&stopTime=${this.stopTime}&shopId=${this.companyName}&toAddress=${this.toAddress}&oprType=withdraw&transactionId=${this.transactionId}&transactionStatus=${this.companyStatus}&shopWithdraw=0&pageNum=${this.pageNum}&pageSize=20&orderBy=updated_at desc`)
       },
       successFun(s) {
         if (s.code !== 200) {
